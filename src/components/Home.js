@@ -5,12 +5,16 @@ export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            location: ''
+            location: '',
+            prediction: ''
         };
     }
 
     async componentDidMount() {
-
+        if (this.state.prediction === '') {
+            const image = fetch("/predict");
+            this.setState({prediction: image});
+        }
     }
 
     render() {
@@ -18,6 +22,10 @@ export default class HomeScreen extends React.Component {
 
             <div style={styles.homeScreenContainer}>
                 <h1 style={styles.titleContainer}>SharkWatch</h1>
+                <div>
+                    <h1 style={{color: "white"}}>{this.state.prediction}</h1>
+                </div>
+
             </div>
         );
     }
