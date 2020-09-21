@@ -12,20 +12,24 @@ export default class HomeScreen extends React.Component {
 
     async componentDidMount() {
         if (this.state.prediction === '') {
-            const image = fetch("/predict");
-            this.setState({prediction: image});
+            fetch("/predict")
+                .then(response => response.blob())
+                .then((response) => {
+                    var url = URL.createObjectURL(response);
+                    this.setState({prediction: url});
+                })
+                .catch(err => console.log(err))
         }
     }
 
     render() {
+
+        console.log(this.state.prediction);
+
         return (
 
             <div style={styles.homeScreenContainer}>
-                <h1 style={styles.titleContainer}>SharkWatch</h1>
-                <div>
-                    <h1 style={{color: "white"}}>{this.state.prediction}</h1>
-                </div>
-
+                <img src={this.state.prediction}/>
             </div>
         );
     }
@@ -34,7 +38,8 @@ export default class HomeScreen extends React.Component {
 const styles = {
     homeScreenContainer: {
         justifyContent: "center",
-        backgroundImage: `url(${GreatWhite})`,
+        //backgroundImage: `url(${GreatWhite})`,
+        flexDirection: "column",
         backgroundSize: "cover",
         overflow: "hidden",
         imageRendering: "-webkit-optimize-contrast",
