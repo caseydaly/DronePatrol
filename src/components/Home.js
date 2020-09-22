@@ -12,7 +12,7 @@ export default class HomeScreen extends React.Component {
 
     async componentDidMount() {
         if (this.state.prediction === '') {
-            fetch("http://127.0.0.1:5000/")
+            fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/prediction")
                 .then(response => response.text())
                 .then((response) => {
                     //var url = URL.createObjectURL(response);
@@ -29,7 +29,7 @@ export default class HomeScreen extends React.Component {
         return (
 
             <div style={styles.homeScreenContainer}>
-                <img src={this.state.prediction}/>
+                {this.state.prediction["some"]}
             </div>
         );
     }

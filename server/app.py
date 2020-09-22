@@ -6,7 +6,7 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def hello_world():
-    response=flask.jsonify({"some":"data"})
+    response=flask.jsonify({"some":"this is new data"})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
