@@ -12,11 +12,11 @@ export default class HomeScreen extends React.Component {
 
     async componentDidMount() {
         if (this.state.prediction === '') {
-            fetch("/predict")
-                .then(response => response.blob())
+            fetch("http://127.0.0.1:5000/")
+                .then(response => response.text())
                 .then((response) => {
-                    var url = URL.createObjectURL(response);
-                    this.setState({prediction: url});
+                    //var url = URL.createObjectURL(response);
+                    this.setState({prediction: response});
                 })
                 .catch(err => console.log(err))
         }

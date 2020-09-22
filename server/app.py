@@ -1,15 +1,14 @@
+import flask
 from flask import Flask
-#from flask import send_file
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
-#@app.route('/predict')
-#def predict_image():
-#    return send_file("./prediction.png", mimetype='image/png')
-
-@app.route('/')
+@app.route('/', methods=['GET'])
 def hello_world():
-    return "Hello from Flask!"
+    response=flask.jsonify({"some":"data"})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 if __name__ == '__main__':
     app.run()
