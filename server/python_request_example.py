@@ -8,44 +8,29 @@ import base64
 import os.path
 from sys import getsizeof
 import pickle
+import utils
 
 
 
 def test():
-    if os.path.isfile("/Users/caseydaly/Desktop/video4.mp4"):
+    f = "/Users/caseydaly/Desktop/video4.mp4"
+    if os.path.isfile(f):
         print("exists")
-        vidcap = cv2.VideoCapture("/Users/caseydaly/Desktop/video4.mp4")
+        vidcap = cv2.VideoCapture(f)
         success, frame = vidcap.read()
     else:
-        print("doesn't exist")
+        print("file " + f + " doesn't exist")
         return
 
     while success:
 
+        print("image type is: " + str(type(frame)))
 
+        bytes_io = utils.get_bytes_from_img(frame)
 
-        retval, buffer = cv2.imencode('.jpg', frame)
+        send_request(bytes_io)
 
-        print(str(type(buffer)))
-
-        # Convert to base64 encoding and show start of data
-        jpg_as_text = base64.b64encode(buffer)
-        print(jpg_as_text[:80])
-        print(str(type(jpg_as_text)))
-
-
-        # Convert back to binary
-        jpg_original = base64.b64decode(jpg_as_text)
-        print(str(type(jpg_original)))
-        jpg_as_np = np.frombuffer(jpg_original, dtype=np.uint8)
-        print(str(type(jpg_as_np)))
-
-    
-
-        image_buffer = cv2.imdecode(jpg_as_np, flags=1)
-        print(str(type(image_buffer)))
-
-        cv2.imshow("frame", image_buffer)
+        time.sleep(10)
 
 
         if cv2.waitKey(25) & 0xFF == ord('q'):
@@ -53,29 +38,20 @@ def test():
 
         success, frame = vidcap.read()
 
-        # Write to a file to show conversion worked
-        # with open('test.jpg', 'wb') as f_output:
-        #     f_output.write(jpg_original)
+def send_request(bytes_io) -> np.ndarray:
+    addr = 'http://127.0.0.1:5000/'
 
-        # addr = 'http://127.0.0.1:5000/'
+    print("type just before sending is: " + str(type(bytes_io)))
 
+    header = {"content-type": "image/jpeg"}
 
-        # prepare headers for http request
-        # content_type = 'image/jpeg'
-        # headers = {'content-type': content_type}
-
-        # print("type just before sending is: " + str(type(jpg)))
-        # # send http request with image and receive response
-        # response = requests.post(addr, data=jpg, headers=headers)
-
-        # print(json.loads(response.text))
-
-        # cv2.imshow("image", img)
-        # time.sleep(10)
-
-
-
-        # expected output: {u'message': u'image received. size=124x124'}
+    # send http request with image and receive response
+    response = requests.post(addr, data=bytes_io, headers=header)
+    # print(str(type(response.text)))
+    # json_response = json.loads(response.text)
+    # print(json_response)
+    # print(str(type(json_response)))
+    time.sleep(10)
 
 if __name__ == '__main__' :
     test()

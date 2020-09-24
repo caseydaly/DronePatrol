@@ -1,47 +1,54 @@
-import flask
-from flask import Flask, Response, request, send_file
+from flask import Flask, request, Response
 from flask_cors import CORS
-import io
-from io import BytesIO
-from base64 import encodebytes
-import PIL
-from PIL import Image
-import cv2
+import jsonpickle
 import numpy as np
+import cv2
+import os
+from Model import PyTorchModel
+
+# Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
 
-def get_response_image(image_path):
-    pil_img = Image.open(image_path, mode='r') # reads the PIL image
-    byte_arr = io.BytesIO()
-    pil_img.save(byte_arr, format='PNG') # convert the PIL image to byte array
-    encoded_img = encodebytes(byte_arr.getvalue()).decode('ascii') # encode as base64
-    return encoded_img
-
-#return a prediction
-@app.route('/', methods=['GET', 'POST'])
-def hello_world():
-    if request.method == 'GET':
-        response=flask.jsonify({"some":"this is new data"})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
-    print(request)
-    print(type(request.data))
-
-    byte_str = cv2.imdecode(request.data)
-    
-    return "workin good!"
+model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "caseydaly" in os.getcwd() else PyTorchModel("~/sharkwatch/server/model/septembersecond.pth")
 
 
-def serve_pil_image(numpy_image):
-    print(numpy_image)
-    img_crop_pil = Image.fromarray(numpy_image)
-    byte_io = BytesIO()
-    img_crop_pil.save(byte_io, format="JPG")
-    jpg_buffer = byte_io.getvalue()
-    byte_io.close()
-    return send_file(img_io, mimetype='image/jpeg')
+# route http posts to this method
+@app.route('/predict', methods=['POST'])
+def test():
+    r = request
+    # convert string of image data to uint8
+    nparr = np.fromstring(r.data, np.uint8)
+    # decode image
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    print(type(img))
+
+    # do some fancy processing here....
+
+    labels = model.predict(img)
+
+    response={}
+
+    for label in labels:
+        response[label.id] = {
+            "group": label.group,
+            "xmin": label.x_min,
+            "xmax": label.x_max,
+            "ymin": label.y_min,
+            "ymax": label.y_max,
+            "color": label.color,
+            "score": label.score
+        }
+
+    # build a response dict to send back to client
+    # response = {'message': 'image received. size={}x{}'.format(img.shape[1], img.shape[0])
+    #             }
+    # encode response using jsonpickle
+    response_pickled = jsonpickle.encode(response)
+
+    return Response(response=response_pickled, status=200, mimetype="application/json")
 
 
-if __name__ == '__main__':
-    app.run()
+# start flask app
+app.run(host="0.0.0.0", port=5000)
