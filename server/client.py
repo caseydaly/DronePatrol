@@ -65,7 +65,7 @@ def predict_and_display(mp4_file, frame, url):
 def run_model(mp4_file, debug):
     global make_prediction, current_frame
     addr = 'http://localhost:5000' if debug else 'http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com'
-    url = addr + '/predict'
+    url = addr + '/prediction'
     print(mp4_file)
     vidcap = cv2.VideoCapture(mp4_file)
     success, frame = vidcap.read()

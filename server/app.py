@@ -14,7 +14,7 @@ model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "casey
 
 
 # route http posts to this method
-@app.route('/predict', methods=['POST'])
+@app.route('/', methods=['POST'])
 def test():
     r = request
     # convert string of image data to uint8
