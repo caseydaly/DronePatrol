@@ -10,7 +10,7 @@ from Model import PyTorchModel
 app = Flask(__name__)
 CORS(app)
 
-model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "caseydaly" in os.getcwd() else PyTorchModel("~/sharkwatch/server/model/septembersecond.pth")
+model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "caseydaly" in os.getcwd() else PyTorchModel("~/SharkWatch/server/model/septembersecond.pth")
 
 
 # route http posts to this method
