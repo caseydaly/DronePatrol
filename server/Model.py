@@ -52,21 +52,23 @@ class PyTorchModel:
         #in_features = self.model.roi_heads.box_predictor.cls_score.in_features
         #self.model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
-        device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+        self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         if torch.cuda.is_available():
             print("Using cuda")
         else:
             print("Using cpu")
-        self.model.to(device)
+        self.model.to(self.device)
         if (isinstance(f, str)): #local file
             print("Loading model from local file at {}".format(f))
-            self.model.load_state_dict(torch.load(f, map_location=device))
+            self.model.load_state_dict(torch.load(f, map_location=self.device))
         elif (isinstance(f, io.BytesIO)): #stream
             print("Loading model from stream")
             pass
         
     def predict(self, image) -> List[Label]:
         frame = torchvision.transforms.ToTensor()(image)
+        if torch.cuda.is_available():
+            frame = frame.to(self.device)
         frame = frame[None, :, :]
         self.model.eval()
         prediction = self.model(frame)
