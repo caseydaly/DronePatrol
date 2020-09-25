@@ -13,6 +13,7 @@ import torch
 from torch.autograd import Variable
 from threading import Thread
 import requests
+import os
 
 
 #Ground Sample Distance for this video (find online based on the drones specs)
@@ -21,7 +22,7 @@ make_prediction = True
 current_frame = None
 
 
-addr = 'http://localhost:5000'
+addr = 'http://localhost:5000' if "caseydaly" in os.getcwd() else 'http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com'
 test_url = addr + '/predict'
 content_type = 'image/jpeg'
 headers = {'content-type': content_type}
