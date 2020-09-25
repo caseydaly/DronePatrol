@@ -21,12 +21,6 @@ GSD = .86
 make_prediction = True
 current_frame = None
 
-
-addr = 'http://localhost:5000' if "caseydaly" in os.getcwd() else 'http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com'
-test_url = addr + '/predict'
-content_type = 'image/jpeg'
-headers = {'content-type': content_type}
-
 def get_labels_from_response(predictions):
     labels = []
     for identifier in predictions:
@@ -34,8 +28,11 @@ def get_labels_from_response(predictions):
         labels.append(Label(int(identifier), str(obj["group"]), int(obj["xmin"]), int(obj["xmax"]), int(obj["ymin"]), int(obj["ymax"]), str(obj["color"]), float(obj["score"])))
     return labels
 
-def predict_and_display(mp4_file, frame):
+def predict_and_display(mp4_file, frame, url):
     global make_prediction, current_frame
+    content_type = 'image/jpeg'
+    headers = {'content-type': content_type}
+
     #run model predictions
 
     print("type of frame is: " + str(type(frame)))
@@ -43,7 +40,7 @@ def predict_and_display(mp4_file, frame):
     # encode image as jpeg
     _, img_encoded = cv2.imencode('.jpg', frame)
     # send http request with image and receive response
-    response = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
+    response = requests.post(url, data=img_encoded.tostring(), headers=headers)
     # decode response
     predictions = json.loads(response.text)
 
@@ -65,8 +62,10 @@ def predict_and_display(mp4_file, frame):
     make_prediction = True
 
 
-def run_model(mp4_file):
+def run_model(mp4_file, debug):
     global make_prediction, current_frame
+    addr = 'http://localhost:5000' if debug else 'http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com'
+    url = addr + '/predict'
     print(mp4_file)
     vidcap = cv2.VideoCapture(mp4_file)
     success, frame = vidcap.read()
@@ -80,7 +79,7 @@ def run_model(mp4_file):
         if make_prediction:
             make_prediction = False
             print("type of frame is: " + str(type(frame)))
-            thread = Thread(target=predict_and_display, args=(mp4_file, frame))
+            thread = Thread(target=predict_and_display, args=(mp4_file, frame, url))
             thread.start()
             
         #need this for the video stream to work continuously, basically says press 'q' to quit
@@ -161,5 +160,6 @@ def distance_between_ellipses():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run PyTorch or TensorFlow model on an mp4 video.')
     parser.add_argument('mp4', help="Path to the video.")
+    parser.add_argument('--debug', help="Running server locally to debug.", action="store_true")
     args = parser.parse_args()
-    run_model(args.mp4)
+    run_model(args.mp4, args.debug)
