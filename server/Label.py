@@ -2,7 +2,7 @@
 #class used to provide a common structure 
 #use "id" as a numerical identifier for every object present in the frame
 class Label:
-    def __init__(self, id: int, group: str, x_min: int, x_max: int, y_min: int, y_max: int, color: str, score: float):
+    def __init__(self, id, group, x_min, x_max, y_min, y_max, color, score):
         self.group = group
         self.x_min = x_min
         self.x_max = x_max
