@@ -23,6 +23,7 @@ current_frame = None
 
 def get_labels_from_response(predictions):
     labels = []
+    print(predictions)
     for identifier in predictions:
         obj = predictions[identifier]
         labels.append(Label(int(identifier), str(obj["group"]), int(obj["xmin"]), int(obj["xmax"]), int(obj["ymin"]), int(obj["ymax"]), str(obj["color"]), float(obj["score"])))
@@ -40,7 +41,10 @@ def predict_and_display(mp4_file, frame, url):
     # encode image as jpeg
     _, img_encoded = cv2.imencode('.jpg', frame)
     # send http request with image and receive response
+    print(url)
     response = requests.post(url, data=img_encoded.tostring(), headers=headers)
+
+    print("got response")
     # decode response
     predictions = json.loads(response.text)
 
@@ -64,8 +68,7 @@ def predict_and_display(mp4_file, frame, url):
 
 def run_model(mp4_file, debug):
     global make_prediction, current_frame
-    addr = 'http://localhost:5000' if debug else 'http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com'
-    url = addr + '/prediction'
+    url = 'http://localhost:5000' if debug else 'http://ec2-13-57-36-7.us-west-1.compute.amazonaws.com'
     print(mp4_file)
     vidcap = cv2.VideoCapture(mp4_file)
     success, frame = vidcap.read()
