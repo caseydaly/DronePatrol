@@ -10,11 +10,15 @@ from Model import PyTorchModel
 app = Flask(__name__)
 CORS(app)
 
-model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "caseydaly" in os.getcwd() else PyTorchModel("~/SharkWatch/server/model/septembersecond.pth")
+model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "caseydaly" in os.getcwd() else PyTorchModel("/home/ubuntu/SharkWatch/server/model/septembersecond.pth")
 
+def log(s):
+        f = open("/home/ubuntu/SharkWatch/server/log.txt", "a+")
+        f.write(s + "\n")
+        f.close()
 
 # route http posts to this method
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def test():
     r = request
     # convert string of image data to uint8
@@ -40,6 +44,7 @@ def test():
             "color": label.color,
             "score": label.score
         }
+        log(label.group)
 
     # build a response dict to send back to client
     # response = {'message': 'image received. size={}x{}'.format(img.shape[1], img.shape[0])
@@ -48,7 +53,6 @@ def test():
     response_pickled = jsonpickle.encode(response)
 
     return Response(response=response_pickled, status=200, mimetype="application/json")
-
 
 if __name__ == '__main__':
     app.run()

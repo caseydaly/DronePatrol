@@ -76,7 +76,7 @@ def run_model(mp4_file, debug):
     count = 0
     while success:
 
-        cv2.imshow(mp4_file,current_frame)
+        #cv2.imshow(mp4_file,current_frame)
         time.sleep(.2)
         
         if make_prediction:

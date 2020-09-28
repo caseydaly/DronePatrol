@@ -35,7 +35,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 #contains info about each class, i.e. what color sharks bounding box should be
-with open("classes.json") as json_file:
+with open("/home/ubuntu/SharkWatch/server/classes.json") as json_file:
     classes = json.load(json_file)
 
 class PyTorchModel:
@@ -65,7 +65,7 @@ class PyTorchModel:
             print("Loading model from stream")
             pass
         
-    def predict(self, image) -> List[Label]:
+    def predict(self, image):
         frame = torchvision.transforms.ToTensor()(image)
         if torch.cuda.is_available():
             frame = frame.to(self.device)
@@ -78,13 +78,13 @@ class PyTorchModel:
         scores = prediction[0]["scores"]
         ret = list()
         for i in range(0, len(boxes)):
-            score: float = float(scores[i].item())
-            xmin: int = int(boxes[i][0].item())
-            ymin: int = int(boxes[i][1].item())
-            xmax: int = int(boxes[i][2].item())
-            ymax: int = int(boxes[i][3].item())
-            group: str = classes[str(labels[i].item())]["category"]
-            color: str = classes[str(labels[i].item())]["color"]
+            score = float(scores[i].item())
+            xmin = int(boxes[i][0].item())
+            ymin = int(boxes[i][1].item())
+            xmax = int(boxes[i][2].item())
+            ymax = int(boxes[i][3].item())
+            group = classes[str(labels[i].item())]["category"]
+            color = classes[str(labels[i].item())]["color"]
             ret.append(Label(i, group, xmin, xmax, ymin, ymax, color, score))
         return ret
 
@@ -94,7 +94,7 @@ class TFModel:
         pass
 
     #Make a prediction on an image and return a list of Label objects
-    def predict(frame) -> List[Label]:
+    def predict(frame):
         #proof of concept, use actual model.
         labels = list()
         labels.append(Label(1, "shark", 20, 150, 20, 150))
