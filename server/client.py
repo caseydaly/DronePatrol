@@ -1,8 +1,6 @@
 import argparse
 import cv2
 import time
-from Model import PyTorchModel
-from Model import TFModel
 from typing import List, Dict, Tuple
 from Label import Label
 import webcolors
@@ -66,9 +64,9 @@ def predict_and_display(mp4_file, frame, url):
     make_prediction = True
 
 
-def run_model(mp4_file, debug):
+def run_model(mp4_file, url):
     global make_prediction, current_frame
-    url = 'http://localhost:5000' if debug else 'http://ec2-13-57-36-7.us-west-1.compute.amazonaws.com'
+    #AWS changes the public IP each time you start up the server, so we can't hard code it
     print(mp4_file)
     vidcap = cv2.VideoCapture(mp4_file)
     success, frame = vidcap.read()
@@ -163,6 +161,7 @@ def distance_between_ellipses():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run PyTorch or TensorFlow model on an mp4 video.')
     parser.add_argument('mp4', help="Path to the video.")
-    parser.add_argument('--debug', help="Running server locally to debug.", action="store_true")
+    parser.add_argument('--url', help="URL of server. If blank, will use localhost.")
     args = parser.parse_args()
-    run_model(args.mp4, args.debug)
+    url = 'http://localhost:5000' if args.url == None else args.url
+    run_model(args.mp4, args.url)
