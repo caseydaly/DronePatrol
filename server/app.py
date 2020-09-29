@@ -1,58 +1,35 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template
 from flask_cors import CORS
 import jsonpickle
 import numpy as np
 import cv2
 import os
-from Model import PyTorchModel
+import time
 
 # Initialize the Flask application
 app = Flask(__name__)
 CORS(app)
 
-model = PyTorchModel("/Users/caseydaly/Downloads/septembersecond.pth") if "caseydaly" in os.getcwd() else PyTorchModel("/home/ubuntu/SharkWatch/server/model/septembersecond.pth")
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-def log(s):
-        f = open("/home/ubuntu/SharkWatch/server/log.txt", "a+")
-        f.write(s + "\n")
-        f.close()
+def gen():
+    i = 0
+    cap = cv2.VideoCapture('/Users/caseydaly/sharkwatch/server/test_vid/video4.mp4')
+    while (cap.isOpened()):
+        ret, img = cap.read()
+        if ret:
+            img = cv2.resize(img, (0,0), fx=0.5, fy=0.5)
+            frame = cv2.imencode('.jpg', img)[1].tobytes()
+            print("sending to client")
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        else:
+            break
 
-# route http posts to this method
-@app.route('/', methods=['POST', 'GET'])
-def test():
-    r = request
-    # convert string of image data to uint8
-    nparr = np.fromstring(r.data, np.uint8)
-    # decode image
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-    print(type(img))
-
-    # do some fancy processing here....
-
-    labels = model.predict(img)
-
-    response={}
-
-    for label in labels:
-        response[label.id] = {
-            "group": label.group,
-            "xmin": label.x_min,
-            "xmax": label.x_max,
-            "ymin": label.y_min,
-            "ymax": label.y_max,
-            "color": label.color,
-            "score": label.score
-        }
-        log(label.group)
-
-    # build a response dict to send back to client
-    # response = {'message': 'image received. size={}x{}'.format(img.shape[1], img.shape[0])
-    #             }
-    # encode response using jsonpickle
-    response_pickled = jsonpickle.encode(response)
-
-    return Response(response=response_pickled, status=200, mimetype="application/json")
+@app.route('/video_feed')
+def video_feed():
+    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run()
