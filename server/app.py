@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, request
 from flask_cors import CORS
 import os
 import cv2  
@@ -10,7 +10,14 @@ from Model import PyTorchModel
 from queue import Queue
 from threading import Thread
 import time
-import webcolors 
+import webcolors
+import youtube_dl
+import pafy
+
+video_id = None
+ydl_opts = {
+    'nocheckcertificate:': True
+}
 
 q = Queue() 
 if "caseydaly" in os.getcwd():
@@ -27,6 +34,8 @@ CORS(app)
 @app.route('/')
 def index():
     print("home page")
+    video_id = request.args.get('v')
+    print("video_id: " + str(video_id))
     return render_template('index.html')
 
 def predict(frame, model, mp4_file):
@@ -39,13 +48,7 @@ def predict(frame, model, mp4_file):
      #display bounding boxes with labels
      display_bounding_boxes(frame, labels)
 
-     # #display lines between sharks and other sharks or sharks and people, with distances labeled
-     # if frame_has_shark(labels):
-     #     shark_distances = get_distances_from_sharks(labels)
-     #     display_distances(frame, shark_distances)
-
      #display this frame
-     #frame = cv2.resize(frame, dsize=(1024, 540), interpolation=cv2.INTER_CUBIC)
      q.put(frame)
      make_prediction = True
 
@@ -59,9 +62,16 @@ def display_bounding_boxes(frame, labels):
         cv2.rectangle(frame, upperLeft, lowerRight, webcolors.name_to_rgb(label.color), thickness=3)
 
 def gen():
-    global make_prediction
+    global make_prediction, video_id
     mp4_file = os.getcwd() + '/test_vid/video4.mp4'
-    cap = cv2.VideoCapture(mp4_file)
+    if video_id is None:
+        cap = cv2.VideoCapture(mp4_file)
+    else:
+        url = "https://www.youtube.com/watch?v=" + video_id
+        video = pafy.new(url, ydl_opts=ydl_opts)
+        best = video.getbest(preftype="mp4")
+        cap = cv2.VideoCapture()
+        cap.open(best.url)
     ret, img = cap.read()
     i = 0
     while ret:
@@ -79,7 +89,6 @@ def gen():
 
 @app.route('/video_feed', methods=['GET', 'POST'])
 def video_feed():
-    print("video feed")
     return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
