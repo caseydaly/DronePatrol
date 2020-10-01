@@ -50,7 +50,7 @@ def display_bounding_boxes(frame, labels):
         label_name = label.group.lower()
         upperLeft = (label.x_min, label.y_min)
         lowerRight = (label.x_max, label.y_max)
-        print(label_name + " at " + str(upperLeft) + " " + str(lowerRight))
+        #print(label_name + " at " + str(upperLeft) + " " + str(lowerRight))
         cv2.rectangle(frame, upperLeft, lowerRight, webcolors.name_to_rgb(label.color), thickness=3)
 
 def gen():
@@ -58,6 +58,7 @@ def gen():
     mp4_file = os.getcwd() + '/test_vid/video4.mp4'
     cap = cv2.VideoCapture(mp4_file)
     ret, img = cap.read()
+    i = 0
     while ret:
         if not q.empty():
             predicted = q.get()
@@ -69,7 +70,6 @@ def gen():
             make_prediction = False
             thread = Thread(target=predict, args=(img, model, mp4_file))
             thread.start()
-        time.sleep(1)
         ret, img = cap.read()
 
 @app.route('/video_feed', methods=['GET', 'POST'])
