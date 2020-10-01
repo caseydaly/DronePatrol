@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import sys
-sys.stdout = open('/home/ubuntu/SharkWatch/server/output.txt', 'a+')
 from flask import Flask, render_template, Response
-
+import os
+import cv2
 
 
 app = Flask(__name__)
@@ -17,8 +17,10 @@ def gen():
     ret, img = cap.read()
     while ret:
         print("sending image")
+        img = cv2.resize(img, (0,0), fx=0.5, fy=0.5)
         frame = cv2.imencode('.jpg', img)[1].tobytes()
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        ret, img = cap.read()
 
 @app.route('/video_feed')
 def video_feed():
