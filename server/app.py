@@ -2,13 +2,14 @@
 import sys
 from flask import Flask, render_template, Response
 import os
-import cv2
+import cv2  
 
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
+    print("home page")
     return render_template('index.html')
 
 def gen():
@@ -22,8 +23,9 @@ def gen():
         yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         ret, img = cap.read()
 
-@app.route('/video_feed')
+@app.route('/video_feed', methods=['GET', 'POST'])
 def video_feed():
+    print("video feed")
     return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
