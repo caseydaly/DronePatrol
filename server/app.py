@@ -1,3 +1,10 @@
+import sys
+sys.stdout = open('/home/ubuntu/SharkWatch/server/output.txt', 'a+')
+print("app.py")
+from werkzeug.debug import DebuggedApplication
+import datetime
+now = datetime.datetime.now()
+print(now.strftime("%Y-%m-%d %H:%M:%S"))
 from flask import Flask, request, Response, render_template
 from flask_cors import CORS
 import jsonpickle
@@ -9,18 +16,23 @@ from Model import PyTorchModel
 from queue import Queue
 from threading import Thread
 import webcolors
-
+print("1")
 q = Queue() #thread safe way to return values from the launched threads
-
+print("2")
 # Initialize the Flask application
 app = Flask(__name__)
-CORS(app)
+app.debug = True
+app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True, pin_security=False)
 
-model = PyTorchModel(os.getcwd() + "/model/septembersecond.pth")
+CORS(app)
+print("3")
+model = PyTorchModel("/home/ubuntu/SharkWatch/server/model/septembersecond.pth")
 make_prediction = True
+print("4")
 
 @app.route('/')
 def index():
+    print("rendering template")
     return render_template('index.html')
 
 def predict(frame, model, mp4_file):
@@ -54,6 +66,7 @@ def display_bounding_boxes(frame, labels):
 
 def gen():
     global make_prediction, model
+    print("gen")
     i = 0
     mp4_file = os.getcwd() + '/test_vid/video4.mp4'
     cap = cv2.VideoCapture(mp4_file)
@@ -80,6 +93,7 @@ def gen():
 
 @app.route('/video_feed')
 def video_feed():
+    print("video feed")
     return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':

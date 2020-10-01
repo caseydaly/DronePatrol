@@ -35,7 +35,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 #contains info about each class, i.e. what color sharks bounding box should be
-with open(os.getcwd() + "/classes.json") as json_file:
+with open("/home/ubuntu/SharkWatch/server/classes.json") as json_file:
     classes = json.load(json_file)
 
 class PyTorchModel:
