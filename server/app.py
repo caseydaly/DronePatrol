@@ -13,7 +13,12 @@ import time
 import webcolors 
 
 q = Queue() 
-model = PyTorchModel(os.getcwd() + "/model/septembersecond.pth")
+if "caseydaly" in os.getcwd():
+    model_file = os.getcwd() + "/model/septembersecond.pth" 
+else:
+    model_file = "/home/ubuntu/SharkWatch/server/model/septembersecond.pth"
+
+model = PyTorchModel(model_file)
 make_prediction = True
 
 app = Flask(__name__)
