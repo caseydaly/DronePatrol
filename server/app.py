@@ -33,6 +33,7 @@ CORS(app)
 
 @app.route('/')
 def index():
+    global video_id
     print("home page")
     video_id = request.args.get('v')
     print("video_id: " + str(video_id))
@@ -65,8 +66,10 @@ def gen():
     global make_prediction, video_id
     mp4_file = os.getcwd() + '/test_vid/video4.mp4'
     if video_id is None:
+        print("No video ID, running predictions on local .mp4 file")
         cap = cv2.VideoCapture(mp4_file)
     else:
+        print("found video ID, running prediction on youtube video")
         url = "https://www.youtube.com/watch?v=" + video_id
         video = pafy.new(url, ydl_opts=ydl_opts)
         best = video.getbest(preftype="mp4")
