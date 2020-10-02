@@ -62,10 +62,14 @@ def get_predicted_image_obj(frame, labels):
             label_name = label.group.lower()
             upperLeft = (label.x_min, label.y_min)
             lowerRight = (label.x_max, label.y_max)
+            if label_name == "shark":
+                color = (0, 0, 255)
+            else:
+                color = webcolors.name_to_rgb(label.color)
             #add another rectangle to the frame
-            cv2.rectangle(frame, upperLeft, lowerRight, webcolors.name_to_rgb(label.color), thickness=3)
+            cv2.rectangle(frame, upperLeft, lowerRight, color, thickness=3)
             #add label to the prediction rectangle
-            cv2.putText(frame, label_name, (label.x_min, label.y_min-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+            cv2.putText(frame, label_name, (label.x_min, label.y_min-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
     return PredictedImage(frame, l)
     
 
@@ -88,8 +92,8 @@ def gen():
         if not q.empty():
             predicted = q.get()
             if len(predicted.labels) > 0:
-                predicted = cv2.resize(predicted.frame, (0,0), fx=0.5, fy=0.5)
-                frame = cv2.imencode('.jpg', predicted.frame)[1].tobytes()
+                predicted_frame = cv2.resize(predicted.frame, (0,0), fx=0.5, fy=0.5)
+                frame = cv2.imencode('.jpg', predicted_frame)[1].tobytes()
                 print("made prediction")
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         elif make_prediction:
