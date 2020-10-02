@@ -13,6 +13,7 @@ import time
 import webcolors
 import youtube_dl
 import pafy
+from PredictedImage import PredictedImage
 
 video_id = None
 ydl_opts = {
@@ -47,20 +48,26 @@ def predict(frame, model, mp4_file):
      labels = model.predict(frame)
 
      #display bounding boxes with labels
-     display_bounding_boxes(frame, labels)
+     predicted_image_obj = get_predicted_image_obj(frame, labels)
 
      #display this frame
-     q.put(frame)
+     q.put(predicted_image_obj)
      make_prediction = True
 
-def display_bounding_boxes(frame, labels):
+def get_predicted_image_obj(frame, labels):
+    l = list()
     for label in labels:
-        #if label.score > 0.8:
-        label_name = label.group.lower()
-        upperLeft = (label.x_min, label.y_min)
-        lowerRight = (label.x_max, label.y_max)
-        #print(label_name + " at " + str(upperLeft) + " " + str(lowerRight))
-        cv2.rectangle(frame, upperLeft, lowerRight, webcolors.name_to_rgb(label.color), thickness=3)
+        if label.score > 0.8:
+            l.append(label)
+            label_name = label.group.lower()
+            upperLeft = (label.x_min, label.y_min)
+            lowerRight = (label.x_max, label.y_max)
+            #add another rectangle to the frame
+            cv2.rectangle(frame, upperLeft, lowerRight, webcolors.name_to_rgb(label.color), thickness=3)
+            #add label to the prediction rectangle
+            cv2.putText(frame, label_name, (label.x_min, label.y_min-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+    return PredictedImage(frame, l)
+    
 
 def gen():
     global make_prediction, video_id
@@ -80,10 +87,11 @@ def gen():
     while ret:
         if not q.empty():
             predicted = q.get()
-            predicted = cv2.resize(predicted, (0,0), fx=0.5, fy=0.5)
-            frame = cv2.imencode('.jpg', predicted)[1].tobytes()
-            print("made prediction")
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            if len(predicted.labels) > 0:
+                predicted = cv2.resize(predicted.frame, (0,0), fx=0.5, fy=0.5)
+                frame = cv2.imencode('.jpg', predicted.frame)[1].tobytes()
+                print("made prediction")
+                yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         elif make_prediction:
             make_prediction = False
             thread = Thread(target=predict, args=(img, model, mp4_file))
