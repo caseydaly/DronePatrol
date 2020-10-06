@@ -6,28 +6,28 @@ import os
 import cv2  
 import jsonpickle
 import numpy as np
-from Model import PyTorchModel
+from .Model import PyTorchModel
 from queue import Queue
 from threading import Thread
 import time
 import webcolors
 import youtube_dl
 import pafy
-from PredictedImage import PredictedImage
+from .PredictedImage import PredictedImage
+from .LiveStream import LiveStream
+from .DJIDrone import DJIDrone
 
 video_id = None
-ydl_opts = {
-    'nocheckcertificate:': True
-}
 
 q = Queue() 
-if "caseydaly" in os.getcwd():
-    model_file = os.getcwd() + "/model/septembersecond.pth" 
+if "caseydaly" in os.path.dirname(os.path.realpath(__file__)):
+    model_file = os.path.dirname(os.path.realpath(__file__)) + "/model/septembersecond.pth" 
 else:
     model_file = "/home/ubuntu/SharkWatch/server/model/septembersecond.pth"
 
 model = PyTorchModel(model_file)
 make_prediction = True
+mp4_file = os.path.dirname(os.path.realpath(__file__)) + '/test_vid/video4.mp4'
 
 app = Flask(__name__)
 CORS(app)
@@ -38,6 +38,8 @@ def index():
     print("home page")
     video_id = request.args.get('v')
     print("video_id: " + str(video_id))
+    if video_id is not None and not LiveStream.is_valid_video("https://www.youtube.com/watch?v=" + video_id):
+        return render_template('not_found.html')
     return render_template('index.html')
 
 def predict(frame, model, mp4_file):
@@ -73,19 +75,8 @@ def get_predicted_image_obj(frame, labels):
     return PredictedImage(frame, l)
     
 
-def gen():
-    global make_prediction, video_id
-    mp4_file = os.getcwd() + '/test_vid/video4.mp4'
-    if video_id is None:
-        print("No video ID, running predictions on local .mp4 file")
-        cap = cv2.VideoCapture(mp4_file)
-    else:
-        print("found video ID, running prediction on youtube video")
-        url = "https://www.youtube.com/watch?v=" + video_id
-        video = pafy.new(url, ydl_opts=ydl_opts)
-        best = video.getbest(preftype="mp4")
-        cap = cv2.VideoCapture()
-        cap.open(best.url)
+def gen(cap):
+    global make_prediction, mp4_file
     ret, img = cap.read()
     i = 0
     while ret:
@@ -104,7 +95,17 @@ def gen():
 
 @app.route('/video_feed', methods=['GET', 'POST'])
 def video_feed():
-    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    global video_id, mp4_file
+    if video_id is None:
+        print("No video ID, running predictions on local .mp4 file")
+        cap = cv2.VideoCapture(mp4_file)
+    else:
+        print("found video ID, running prediction on youtube video")
+        url = "https://www.youtube.com/watch?v=" + video_id
+        drone = DJIDrone()
+        stream = LiveStream(url, drone)
+        cap = stream.vid_cap
+    return Response(gen(cap), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

@@ -3,7 +3,7 @@
 #so make sure they have 
 import sys
 print(sys.path)
-from Label import Label
+from .Label import Label
 from typing import List
 import torch
 import torchvision
@@ -35,8 +35,8 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 #contains info about each class, i.e. what color sharks bounding box should be
-if "caseydaly" in os.getcwd():
-    classes_file = os.getcwd() + "/classes.json"
+if "caseydaly" in os.path.dirname(os.path.realpath(__file__)):
+    classes_file = os.path.dirname(os.path.realpath(__file__)) + "/classes.json"
 else:
     classes_file = "/home/ubuntu/SharkWatch/server/classes.json"
     
