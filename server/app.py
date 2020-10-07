@@ -6,16 +6,16 @@ import os
 import cv2  
 import jsonpickle
 import numpy as np
-from .Model import PyTorchModel
+from classes.Model import PyTorchModel
 from queue import Queue
 from threading import Thread
 import time
 import webcolors
 import youtube_dl
 import pafy
-from .PredictedImage import PredictedImage
-from .LiveStream import LiveStream
-from .DJIDrone import DJIDrone
+from classes.PredictedImage import PredictedImage
+from classes.LiveStream import LiveStream
+from classes.DJIDrone import DJIDrone
 
 video_id = None
 
