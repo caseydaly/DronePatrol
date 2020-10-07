@@ -1,21 +1,28 @@
 #!/usr/bin/env python
 import sys
+import os
+
+cwd = os.path.dirname(os.path.realpath(__file__))
+
+sys.path.append(cwd + "/classes")
+
+print(sys.path)
+
 from flask import Flask, render_template, Response, request
 from flask_cors import CORS
-import os
 import cv2  
 import jsonpickle
 import numpy as np
-from classes.Model import PyTorchModel
+from Model import PyTorchModel
 from queue import Queue
 from threading import Thread
 import time
 import webcolors
 import youtube_dl
 import pafy
-from classes.PredictedImage import PredictedImage
-from classes.LiveStream import LiveStream
-from classes.DJIDrone import DJIDrone
+from PredictedImage import PredictedImage
+from LiveStream import LiveStream
+from DJIDrone import DJIDrone
 
 video_id = None
 
