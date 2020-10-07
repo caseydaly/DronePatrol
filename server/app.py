@@ -21,9 +21,9 @@ video_id = None
 
 q = Queue() 
 if "caseydaly" in os.path.dirname(os.path.realpath(__file__)):
-    model_file = os.path.dirname(os.path.realpath(__file__)) + "/model/octobersecond.pth" 
+    model_file = os.path.dirname(os.path.realpath(__file__)) + "/models/octobersecond.pth" 
 else:
-    model_file = "/home/ubuntu/SharkWatch/server/model/octobersecond.pth"
+    model_file = "/home/ubuntu/SharkWatch/server/models/octobersecond.pth"
 
 model = PyTorchModel(model_file)
 make_prediction = True
