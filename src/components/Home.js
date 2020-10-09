@@ -1,35 +1,56 @@
 import React from 'react';
-import GreatWhite from '../assets/great-white.jpg';
+import MapGL from 'react-map-gl';
+
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
-            location: '',
-            prediction: ''
+            loading: true,
+            viewport: {
+                latitude: 37.8,
+                longitude: -122.4,
+                zoom: 5,
+                bearing: 0,
+                pitch: 0
+            }
         };
     }
 
-    async componentDidMount() {
-        if (this.state.prediction === '') {
-            fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/prediction")
-                .then(response => response.text())
-                .then((response) => {
-                    //var url = URL.createObjectURL(response);
-                    this.setState({prediction: response});
-                })
-                .catch(err => console.log(err))
-        }
+    componentDidMount(props) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const { latitude, longitude } = position.coords;
+
+                this.setState({
+                    viewport: { latitude: latitude, longitude: longitude, zoom: 5, bearing: 0, pitch: 0 },
+                    loading: false
+                });
+            },
+            () => {
+                this.setState({ loading: false });
+            }
+        );
     }
 
     render() {
 
-        console.log(this.state.prediction);
+        if (this.state.loading) {
+            return null;
+        }
 
         return (
 
             <div style={styles.homeScreenContainer}>
-                {this.state.prediction["some"]}
+                <MapGL
+                    {...this.state.viewport}
+                    width="100vw"
+                    height="100vh"
+                    mapStyle="mapbox://styles/mapbox/dark-v9"
+                    onViewportChange={viewport => this.setState({ viewport })}
+                    mapboxApiAccessToken={MAPBOX_TOKEN}
+                />
             </div>
         );
     }
@@ -37,24 +58,8 @@ export default class HomeScreen extends React.Component {
 
 const styles = {
     homeScreenContainer: {
-        justifyContent: "center",
-        //backgroundImage: `url(${GreatWhite})`,
-        flexDirection: "column",
-        backgroundSize: "cover",
-        overflow: "hidden",
-        imageRendering: "-webkit-optimize-contrast",
-        width: "100%",
-        height: "100%",
-        flex: 1
-    },
-    titleContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-        fontSize: 100,
-        height: "100%",
-        width: "100%",
-        textAlign: "center",
-        color: "#1E90FF"
+        height: "100vh",
+        width: "100%"
     }
 
 }
