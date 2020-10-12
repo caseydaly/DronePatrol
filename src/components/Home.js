@@ -1,6 +1,6 @@
 import React from 'react';
 import MapGL from 'react-map-gl';
-
+import Sidebar from './Sidebar';
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
 export default class HomeScreen extends React.Component {
@@ -47,10 +47,12 @@ export default class HomeScreen extends React.Component {
                     {...this.state.viewport}
                     width="100vw"
                     height="100vh"
-                    mapStyle="mapbox://styles/mapbox/dark-v9"
+                    mapStyle="mapbox://styles/mapbox/streets-v11"
                     onViewportChange={viewport => this.setState({ viewport })}
                     mapboxApiAccessToken={MAPBOX_TOKEN}
-                />
+                >
+                    <Sidebar/>
+                </MapGL>
             </div>
         );
     }
