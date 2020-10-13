@@ -7,6 +7,9 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import { ReactComponent as LocationIcon } from '../assets/LocationIcon.svg';
 
 const suggestions = [
   { label: 'California' },
@@ -15,13 +18,20 @@ const suggestions = [
   { label: 'Ocean Beach, CA' }
 ];
 
+
 function renderInput(inputProps) {
   const { classes, ref, ...other } = inputProps;
 
   return (
     <TextField
       fullWidth
+      className={classes.input}
       InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            <SvgIcon component={LocationIcon}/>
+          </InputAdornment>
+        ),
         inputRef: ref,
         classes: {
           input: classes.input,
@@ -45,10 +55,10 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
               {part.text}
             </span>
           ) : (
-            <strong key={String(index)} style={{ fontWeight: 500 }}>
-              {part.text}
-            </strong>
-          );
+              <strong key={String(index)} style={{ fontWeight: 500 }}>
+                {part.text}
+              </strong>
+            );
         })}
       </div>
     </MenuItem>
@@ -77,15 +87,15 @@ function getSuggestions(value) {
   return inputLength === 0
     ? []
     : suggestions.filter(suggestion => {
-        const keep =
-          count < 5 && suggestion.label.toLowerCase().slice(0, inputLength) === inputValue;
+      const keep =
+        count < 5 && suggestion.label.toLowerCase().slice(0, inputLength) === inputValue;
 
-        if (keep) {
-          count += 1;
-        }
+      if (keep) {
+        count += 1;
+      }
 
-        return keep;
-      });
+      return keep;
+    });
 }
 
 const styles = theme => ({
@@ -109,6 +119,10 @@ const styles = theme => ({
     padding: 0,
     listStyleType: 'none',
   },
+  input: {
+    background: "#F4F7F9",
+    color: "#000000"
+  }
 });
 
 class IntegrationAutosuggest extends React.Component {
