@@ -53,11 +53,11 @@ class Sidebar extends React.Component {
                         className={classes.input}
                         inputVariant="outlined"
                         keyboardIcon={
-                            <InputAdornment position="start">
+                            <InputAdornment position="start" variant="standard">
                                 <SvgIcon component={CalendarIcon} />
                             </InputAdornment>
                         }
-                        InputAdornmentProps={{ position: "start", variant: "standard" }}
+                        InputAdornmentProps={{ position: "start"}}
                         disableToolbar
                         variant="inline"
                         format="MM/dd/yyyy"
@@ -67,15 +67,16 @@ class Sidebar extends React.Component {
                         onChange={this.handleStartChange}
                         KeyboardButtonProps={{
                             'aria-label': 'change date',
+                            edge: "start"
                         }}
                     />
                     <KeyboardDatePicker
                         fullWidth
                         className={classes.input}
                         inputVariant="outlined"
-                        InputAdornmentProps={{ position: "start", variant: "standard" }}
+                        InputAdornmentProps={{ position: "start"}}
                         keyboardIcon={
-                            <InputAdornment position="start">
+                            <InputAdornment position="start" variant="standard">
                                 <SvgIcon component={CalendarIcon} />
                             </InputAdornment>
                         }
@@ -89,6 +90,7 @@ class Sidebar extends React.Component {
                         onChange={this.handleEndChange}
                         KeyboardButtonProps={{
                             'aria-label': 'change date',
+                            edge: "start"
                         }}
                     />
                 </MuiPickersUtilsProvider>
@@ -102,7 +104,8 @@ class Sidebar extends React.Component {
 
 const styles = theme => ({
     input: {
-        background: "#F4F7F9"
+        background: "#F4F7F9",
+        width: "100%"
     },
     root: {
         margin: 0,
