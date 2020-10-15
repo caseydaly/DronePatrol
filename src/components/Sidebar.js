@@ -6,10 +6,14 @@ import DateFnsUtils from "@date-io/date-fns";
 import Button from '@material-ui/core/Button';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SvgIcon from '@material-ui/core/SvgIcon';
-import { ReactComponent as SearchIcon } from '../assets/SearchIcon.svg';
+import SearchButton from './SearchButton';
+import { withStyles } from '@material-ui/core';
+import { ReactComponent as CalendarIcon } from '../assets/CalendarIcon.svg';
 
 
-export default class Sidebar extends React.Component {
+
+
+class Sidebar extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -30,7 +34,10 @@ export default class Sidebar extends React.Component {
         this.setState({ endDate: date });
     };
 
+
     render() {
+
+        const { classes } = this.props;
 
         return (
 
@@ -43,6 +50,14 @@ export default class Sidebar extends React.Component {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                         fullWidth
+                        className={classes.input}
+                        inputVariant="outlined"
+                        keyboardIcon={
+                            <InputAdornment position="start">
+                                <SvgIcon component={CalendarIcon} />
+                            </InputAdornment>
+                        }
+                        InputAdornmentProps={{ position: "start", variant: "standard" }}
                         disableToolbar
                         variant="inline"
                         format="MM/dd/yyyy"
@@ -56,6 +71,14 @@ export default class Sidebar extends React.Component {
                     />
                     <KeyboardDatePicker
                         fullWidth
+                        className={classes.input}
+                        inputVariant="outlined"
+                        InputAdornmentProps={{ position: "start", variant: "standard" }}
+                        keyboardIcon={
+                            <InputAdornment position="start">
+                                <SvgIcon component={CalendarIcon} />
+                            </InputAdornment>
+                        }
                         disableToolbar
                         variant="inline"
                         margin="normal"
@@ -69,28 +92,22 @@ export default class Sidebar extends React.Component {
                         }}
                     />
                 </MuiPickersUtilsProvider>
-                <div style={{marginTop: 10}}>
-                    <Button 
-                    variant="contained" 
-                    color="primary" 
-                    fullWidth
-                    InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SvgIcon component={SearchIcon}/>
-                          </InputAdornment>
-                        )
-                    }}
-                    >
-                        Search
-                    </Button>
+                <div style={{ marginTop: 10 }}>
+                    <SearchButton />
                 </div>
             </div>
         );
     }
 };
 
-const styles = {
+const styles = theme => ({
+    input: {
+        background: "#F4F7F9"
+    },
+    root: {
+        margin: 0,
+        padding: 0
+    }
+});
 
-
-};
+export default withStyles(styles)(Sidebar);

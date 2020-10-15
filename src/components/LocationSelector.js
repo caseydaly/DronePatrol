@@ -13,9 +13,21 @@ import { ReactComponent as LocationIcon } from '../assets/LocationIcon.svg';
 
 const suggestions = [
   { label: 'California' },
-  { label: 'Huntington Beach, CA' },
-  { label: 'Pacific Beach, CA' },
-  { label: 'Ocean Beach, CA' }
+  { label: 'Huntington Beach' },
+  { label: 'Pacific Beach' },
+  { label: 'Ocean Beach' },
+  { label: 'Morro Bay'},
+  { label: 'Pismo Beach'},
+  { label: 'Goleta Beach'},
+  {label: 'Leadbetter Beach'},
+  {label: 'Refugio State Beach'},
+  {label: 'Santa Monica Pier'},
+  {label: 'Windandsea Beach'},
+  {label: 'Upper Trestles'},
+  {label: 'Rincon Point'},
+  {label: 'Asilomar State Beach'},
+  {label: 'Steamer Lane'},
+  {label: 'Mavericks'},
 ];
 
 
@@ -25,6 +37,7 @@ function renderInput(inputProps) {
   return (
     <TextField
       fullWidth
+      variant="outlined"
       className={classes.input}
       InputProps={{
         startAdornment: (
@@ -108,7 +121,7 @@ const styles = theme => ({
     zIndex: 1,
     marginTop: theme.spacing.unit,
     left: 0,
-    right: 0,
+    right: 0
   },
   suggestion: {
     display: 'block',
@@ -116,7 +129,7 @@ const styles = theme => ({
   suggestionsList: {
     margin: 0,
     padding: 0,
-    listStyleType: 'none',
+    listStyleType: 'none'
   },
   input: {
     background: "#F4F7F9",
