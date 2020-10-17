@@ -52,6 +52,7 @@ export default class HomeScreen extends React.Component {
                     mapboxApiAccessToken={MAPBOX_TOKEN}
                 >
                     <Sidebar/>
+
                 </MapGL>
             </div>
         );
