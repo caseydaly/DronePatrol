@@ -1,5 +1,5 @@
 import React from 'react';
-import MapGL from 'react-map-gl';
+import MapGL, { HTMLOverlay } from 'react-map-gl';
 import Sidebar from './Sidebar';
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
@@ -51,8 +51,13 @@ export default class HomeScreen extends React.Component {
                     onViewportChange={viewport => this.setState({ viewport })}
                     mapboxApiAccessToken={MAPBOX_TOKEN}
                 >
-                    <Sidebar/>
-
+                    <HTMLOverlay
+                        captureClick
+                        captureDoubleClick
+                        captureDrag
+                        captureScroll
+                        redraw={() => <Sidebar />} 
+                    />
                 </MapGL>
             </div>
         );

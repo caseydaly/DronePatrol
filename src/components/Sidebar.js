@@ -37,7 +37,11 @@ class Sidebar extends React.Component {
     handleEndChange = (date) => {
         this.setState({ endDate: date });
     };
-
+    
+    handleClick = e => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
 
     render() {
 
@@ -45,7 +49,7 @@ class Sidebar extends React.Component {
 
         return (
 
-            <div style={{ position: "fixed", width: "33%", height: "86%", backgroundColor: "white", marginLeft: "2%", marginTop: "2%", paddingRight: "1.65%", paddingLeft: "1.65%", paddingTop: "1.65%", borderRadius: 25, overflowY: "auto", pointerEvents: "none" }}>
+            <div onClick={this.handleClick} style={{ position: "fixed", width: "33%", height: "86%", backgroundColor: "white", marginLeft: "2%", marginTop: "2%", paddingRight: "1.65%", paddingLeft: "1.65%", paddingTop: "1.65%", borderRadius: 25, overflowY: "auto", cursor: 'default'}}>
                 <h1 style={{ fontSize: "24px", color: "#0075DF", fontWeight: 700, marginBottom: "0px", marginTop: "0px" }}>Drone Patrol</h1>
                 <p style={{ fontSize: "16px", marginTop: "8px" }}> Locate sharks around your area. </p>
                 <p style={{ fontWeight: 500, marginTop: "30px", marginBottom: "16px", height: 10 }}>Choose Location</p>
