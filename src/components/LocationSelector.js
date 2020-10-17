@@ -39,6 +39,7 @@ function renderInput(inputProps) {
       fullWidth
       variant="outlined"
       className={classes.input}
+      margin="dense"
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
@@ -50,6 +51,9 @@ function renderInput(inputProps) {
           input: classes.input,
         },
         ...other,
+      }}
+      InputLabelProps={{
+        shrink: true
       }}
     />
   );

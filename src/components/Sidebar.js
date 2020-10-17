@@ -9,7 +9,11 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import SearchButton from './SearchButton';
 import { withStyles } from '@material-ui/core';
 import { ReactComponent as CalendarIcon } from '../assets/CalendarIcon.svg';
-
+import Typography from '@material-ui/core/Typography';
+import Grid from "@material-ui/core/Grid";
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import Divider from '@material-ui/core/Divider';
+import SmsSignUp from "./SmsSignUp";
 
 
 
@@ -41,23 +45,26 @@ class Sidebar extends React.Component {
 
         return (
 
-            <div style={{ position: "fixed", width: "33%", height: "86%", backgroundColor: "white", marginLeft: "2.6%", marginTop: "2.9%", paddingLeft: "1.65%", paddingTop: "35px", paddingRight: "1.65%", borderRadius: 25 }}>
+            <div style={{ position: "fixed", width: "33%", height: "86%", backgroundColor: "white", marginLeft: "2%", marginTop: "2%", paddingLeft: "1.65%", paddingTop: "1.65%", paddingRight: "1.65%", borderRadius: 25 }}>
                 <h1 style={{ fontSize: "24px", color: "#0075DF", fontWeight: 700, marginBottom: "0px", marginTop: "0px" }}>Drone Patrol</h1>
                 <p style={{ fontSize: "16px", marginTop: "8px" }}> Locate sharks around your area. </p>
-                <p style={{ fontWeight: 500, marginTop: "30px" }}>Choose Location</p>
-                <LocationSelector />
-                <p style={{ fontWeight: 500, marginTop: "30px" }}>Time period</p>
+                <p style={{ fontWeight: 500, marginTop: "30px", marginBottom: "16px", height: 10 }}>Choose Location</p>
+                <p style={{ marginTop: "0px", paddingTop: 0 }}>
+                    <LocationSelector />
+                </p>
+                <p style={{ fontWeight: 500, marginTop: "20px", marginBottom: "10px" }}>Time period</p>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                         fullWidth
                         className={classes.input}
                         inputVariant="outlined"
+                        margin="normal"
                         keyboardIcon={
                             <InputAdornment position="start" variant="standard">
                                 <SvgIcon component={CalendarIcon} />
                             </InputAdornment>
                         }
-                        InputAdornmentProps={{ position: "start"}}
+                        InputAdornmentProps={{ position: "start" }}
                         disableToolbar
                         variant="inline"
                         format="MM/dd/yyyy"
@@ -74,7 +81,7 @@ class Sidebar extends React.Component {
                         fullWidth
                         className={classes.input}
                         inputVariant="outlined"
-                        InputAdornmentProps={{ position: "start"}}
+                        InputAdornmentProps={{ position: "start" }}
                         keyboardIcon={
                             <InputAdornment position="start" variant="standard">
                                 <SvgIcon component={CalendarIcon} />
@@ -94,13 +101,17 @@ class Sidebar extends React.Component {
                         }}
                     />
                 </MuiPickersUtilsProvider>
-                <div style={{ marginTop: 10 }}>
+                <div style={{ marginTop: 10, marginBottom: 20 }}>
                     <SearchButton />
                 </div>
+                <Divider/>
+                <SmsSignUp/>
+
             </div>
         );
     }
 };
+
 
 const styles = theme => ({
     input: {
@@ -110,6 +121,9 @@ const styles = theme => ({
     root: {
         margin: 0,
         padding: 0
+    },
+    h5: {
+        color: "#0075DF"
     }
 });
 
