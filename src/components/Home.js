@@ -1,6 +1,7 @@
 import React from 'react';
 import MapGL, { HTMLOverlay } from 'react-map-gl';
 import Sidebar from './Sidebar';
+import CustomMapController from './CustomMapController';
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
 export default class HomeScreen extends React.Component {
@@ -40,6 +41,8 @@ export default class HomeScreen extends React.Component {
             return null;
         }
 
+        const mapController = new CustomMapController();
+
         return (
 
             <div style={styles.homeScreenContainer}>
@@ -50,12 +53,9 @@ export default class HomeScreen extends React.Component {
                     mapStyle="mapbox://styles/mapbox/streets-v11"
                     onViewportChange={viewport => this.setState({ viewport })}
                     mapboxApiAccessToken={MAPBOX_TOKEN}
+                    controller={mapController}
                 >
                     <HTMLOverlay
-                        captureClick
-                        captureDoubleClick
-                        captureDrag
-                        captureScroll
                         redraw={() => <Sidebar />} 
                     />
                 </MapGL>
@@ -67,7 +67,7 @@ export default class HomeScreen extends React.Component {
 const styles = {
     homeScreenContainer: {
         height: "100vh",
-        width: "100%"
+        width: "80%"
     }
 
 }
