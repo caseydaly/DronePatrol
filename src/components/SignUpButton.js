@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import { ReactComponent as SearchIcon } from '../assets/SearchIcon.svg';
+import { ReactComponent as SharkStrokeWhiteIcon } from '../assets/SharkStrokeWhiteIcon.svg';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function SearchButton() {
+export default function SignUpButton(props) {
     const classes = useStyles();
 
     return (
@@ -37,11 +37,12 @@ export default function SearchButton() {
             fullWidth
             startIcon={
                 <InputAdornment position="start">
-                    <SvgIcon component={SearchIcon} />
+                    <SvgIcon component={SharkStrokeWhiteIcon} />
                 </InputAdornment>
             }
+            onClick={props.handler}
         >
-            <p style={{justifySelf: "center", width: "100%"}}>Search</p>
+            <p style={{justifySelf: "center", width: "100%"}}>Sign Up</p>
         </Button>
     );
 }

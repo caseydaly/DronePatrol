@@ -5,7 +5,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { ReactComponent as PhoneIcon } from '../assets/PhoneIcon.svg';
 
-export default function PhoneEntry() {
+export default function PhoneEntry(props) {
     const classes = useStyles();
 
     return (
@@ -28,6 +28,7 @@ export default function PhoneEntry() {
                 shrink: true
             }}
             placeholder="Enter phone number"
+            onChange={props.handler}
         />
     );
 

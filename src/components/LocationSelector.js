@@ -28,6 +28,7 @@ const suggestions = [
   {label: 'Asilomar State Beach'},
   {label: 'Steamer Lane'},
   {label: 'Mavericks'},
+  {label: 'Salmon Creek'}
 ];
 
 
@@ -163,6 +164,7 @@ class IntegrationAutosuggest extends React.Component {
     this.setState({
       value: newValue,
     });
+    this.props.handler(newValue);
   };
 
   render() {

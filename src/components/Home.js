@@ -15,7 +15,8 @@ export default class HomeScreen extends React.Component {
                 zoom: 5,
                 bearing: 0,
                 pitch: 0
-            }
+            },
+            closestBeach: "Salmon Creek"
         };
     }
 
@@ -56,7 +57,7 @@ export default class HomeScreen extends React.Component {
                     controller={mapController}
                 >
                     <HTMLOverlay
-                        redraw={() => <Sidebar />} 
+                        redraw={() => <Sidebar viewport={this.state.viewport} location={this.state.closestBeach}/>} 
                     />
                 </MapGL>
             </div>

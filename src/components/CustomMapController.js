@@ -1,13 +1,14 @@
-  /// my-map-controller.js
-  import {MapController} from 'react-map-gl';
+/// my-map-controller.js
+import { MapController } from 'react-map-gl';
 
-  export default class CustomMapController extends MapController {
-    
+export default class CustomMapController extends MapController {
+
     // Override the default event handler
     handleEvent(event) {
-        if (!this.eventIsInSidebar(event.center.x, event.center.y)) {
-            console.log(event);
-            super.handleEvent(event);
+        if (event != null && event.center != null) {
+            if (!this.eventIsInSidebar(event.center.x, event.center.y)) {
+                super.handleEvent(event);
+            }
         }
     }
 
@@ -25,4 +26,4 @@
         return false;
 
     }
-  }
+}
