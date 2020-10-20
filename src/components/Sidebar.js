@@ -64,7 +64,8 @@ const styles = {
         paddingTop: "0.5%",
         borderRadius: 25, 
         overflowY: "auto", 
-        cursor: 'default'
+        cursor: 'default',
+        zIndex: 10
     }
 }
 

@@ -5,11 +5,12 @@ export default class CustomMapController extends MapController {
 
     // Override the default event handler
     handleEvent(event) {
-        if (event != null && event.center != null) {
-            if (!this.eventIsInSidebar(event.center.x, event.center.y)) {
-                super.handleEvent(event);
-            }
-        }
+        // if (event != null && event.center != null) {
+        //     if (!this.eventIsInSidebar(event.center.x, event.center.y)) {
+        //         super.handleEvent(event);
+        //     }
+        // }
+        super.handleEvent(event);
     }
 
 

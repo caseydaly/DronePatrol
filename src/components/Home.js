@@ -1,8 +1,21 @@
 import React from 'react';
-import MapGL, { HTMLOverlay } from 'react-map-gl';
+import MapGL, { HTMLOverlay, Marker, Popup } from 'react-map-gl';
 import Sidebar from './Sidebar';
 import CustomMapController from './CustomMapController';
+import SharkIconFilledWhite from '../assets/SharkIconFilledWhite.svg';
+import SharkIconFilledRed from '../assets/SharkIconFilledRed.svg';
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
+
+const sightings = [
+    {
+        lat: 37.609219,
+        long: -122.503051
+    },
+    {
+        lat: 38.351003,
+        long: -123.070669
+    }
+];
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
@@ -16,8 +29,11 @@ export default class HomeScreen extends React.Component {
                 bearing: 0,
                 pitch: 0
             },
-            closestBeach: "Salmon Creek"
+            closestBeach: "Salmon Creek",
+            popup: null
         };
+        this._renderIcon.bind(this);
+        this._iconClick.bind(this);
     }
 
     componentDidMount(props) {
@@ -36,6 +52,27 @@ export default class HomeScreen extends React.Component {
         );
     }
 
+    _iconClick(lat, long) {
+        console.log("clicked icon");
+        this.setState({popup: {lat: lat, long: long}});
+    }
+
+    _renderIcon(sighting, i) {
+        const { lat, long } = sighting;
+        return (
+            <Marker
+                key={i}
+                longitude={long}
+                latitude={lat}
+                offsetLeft={-30}
+                captureClick={true}
+                captureDoubleClick={true}
+            >
+                <img src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, lat, long)}/>
+            </Marker>
+        );
+    }
+
     render() {
 
         if (this.state.loading) {
@@ -45,8 +82,7 @@ export default class HomeScreen extends React.Component {
         const mapController = new CustomMapController();
 
         return (
-
-            <div style={styles.homeScreenContainer}>
+            <div >
                 <MapGL
                     {...this.state.viewport}
                     width="100vw"
@@ -57,8 +93,21 @@ export default class HomeScreen extends React.Component {
                     controller={mapController}
                 >
                     <HTMLOverlay
-                        redraw={() => <Sidebar viewport={this.state.viewport} location={this.state.closestBeach}/>} 
+                        captureDrag={true}
+                        captureDoubleClick={true}
+                        captureClick={true}
+                        redraw={() => <Sidebar viewport={this.state.viewport} location={this.state.closestBeach} />}
                     />
+                    {sightings.map(this._renderIcon.bind(this))}
+                    {this.state.popup && <Popup
+                        latitude={this.state.popup.lat}
+                        longitude={this.state.popup.long}
+                        closeButton={true}
+                        closeOnClick={false}
+                        onClose={() => this.setState({ popup: null })}
+                        anchor="top" >
+                        <div>You are here</div>
+                    </Popup>}
                 </MapGL>
             </div>
         );
@@ -66,10 +115,6 @@ export default class HomeScreen extends React.Component {
 };
 
 const styles = {
-    homeScreenContainer: {
-        height: "100vh",
-        width: "80%"
-    }
 
 }
 
