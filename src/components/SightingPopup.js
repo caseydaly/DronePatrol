@@ -8,6 +8,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import SharkPic from '../assets/SharkPic.png';
 import CloseIcon from '@material-ui/icons/Close';
+import { ReactComponent as GpsCoordinatesIcon } from '../assets/GpsCoordinatesIcon.svg';
+import { ReactComponent as SharkDistanceIcon } from '../assets/SharkDistanceIcon.svg';
+import { ReactComponent as SharkSizeIcon } from '../assets/SharkSizeIcon.svg';
+import { ReactComponent as SharkTypeIcon } from '../assets/SharkTypeIcon.svg';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
 
 
@@ -17,7 +22,7 @@ export default function SightingPopup(props) {
         <div style={{ position: "fixed", top: "20%", left: "20%", display: "flex", flexDirection: "column", height: 350, width: 650, padding: "2%", background: "white", zIndex: 10, borderRadius: 25 }}>
             <div style={{ display: "flex", height: "10%", width: "100%", flexDirection: "row", background: "#F2F5FA", borderRadius: 25, color: "#0075DF", alignItems: "center", paddingLeft: "3%", justifyContent: "space-between" }}>
                 <div>
-                    <h3><span style={{fontWeight: "bold"}}>Shark spotted - </span> <span style={{fontWeight: "lighter"}}>{props.location}</span></h3>
+                    <h3><span style={{ fontWeight: "bold" }}>Shark spotted - </span> <span style={{ fontWeight: "lighter" }}>{props.location}</span></h3>
                 </div>
                 <div style={{ display: "flex", justifySelf: "flex-end" }}>
                     <IconButton onClick={props.handleClose}>
@@ -30,18 +35,22 @@ export default function SightingPopup(props) {
                 <div>
                     <img src={SharkPic} />
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "80%", marginLeft: "5%" }}>
-                    <div style={{ display: "flex", flexDirection: "row" }}>
-                        <p>Type of Shark:</p>
+                <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "80%", marginLeft: "2%" }}>
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <SvgIcon component={SharkTypeIcon} />
+                        <p style={{marginLeft: "3%"}}>Type of Shark:</p>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "row" }}>
-                        <p>Estimated Size:</p>
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <SvgIcon component={SharkSizeIcon} />
+                        <p style={{marginLeft: "3%"}}>Estimated Size:</p>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "row" }}>
-                        <p>GPS Coordinates:</p>
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <SvgIcon component={GpsCoordinatesIcon} />
+                        <p style={{marginLeft: "3%"}}>GPS Coordinates:</p>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "row" }}>
-                        <p>Distance From Shore:</p>
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                        <SvgIcon component={SharkDistanceIcon} />
+                        <p style={{marginLeft: "3%"}}>Distance From Shore:</p>
                     </div>
                 </div>
             </div>
