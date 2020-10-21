@@ -42,7 +42,7 @@ class Sidebar extends React.Component {
 
         return (
 
-            <div style={this.state.containerStyle}>
+            <div style={{...this.state.containerStyle, opacity: this.props.opacity}}>
                 <SidebarMainContainer />
                 <Divider />
                 <SmsSignUp location={this.props.location} onMinimize={this.handleSmsMinimize.bind(this)} onMaximize={this.handleSmsMaximize.bind(this)}/>

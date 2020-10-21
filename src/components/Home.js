@@ -78,7 +78,11 @@ export default class HomeScreen extends React.Component {
     }
 
     onClose() {
-        this.setState({popup: null})
+        this.setState({ popup: null })
+    }
+
+    getOpacity() {
+        return this.state.popup == null ? 1 : 0.4;
     }
 
     render() {
@@ -88,40 +92,43 @@ export default class HomeScreen extends React.Component {
         }
 
         const mapController = new CustomMapController();
-
         return (
-            <div >
-                <MapGL
-                    {...this.state.viewport}
-                    width="100vw"
-                    height="100vh"
-                    mapStyle="mapbox://styles/mapbox/streets-v11"
-                    onViewportChange={viewport => this.setState({ viewport })}
-                    mapboxApiAccessToken={MAPBOX_TOKEN}
-                    controller={mapController}
-                >
-                    <HTMLOverlay
-                        captureDrag={true}
-                        captureDoubleClick={true}
-                        captureClick={true}
-                        redraw={() => <Sidebar viewport={this.state.viewport} location={this.state.closestBeach} />}
-                    />
-                    {sightings.map(this._renderIcon.bind(this))}
-                    {this.state.popup && <HTMLOverlay
-                        captureDrag={true}
-                        captureDoubleClick={true}
-                        captureClick={true}
-                        redraw={() => <SightingPopup lat={this.state.popup.lat} long={this.state.popup.long} location={this.state.popup.location} onClose={this.onClose.bind(this)}/>}
-                    />
 
-                    }
-                </MapGL>
+            <div style={{ width: "100%", height: "100%" }}>
+                <div style={{ position: "fixed", opacity: this.getOpacity()}}>
+                    <MapGL
+                        {...this.state.viewport}
+                        style={{position: "fixed", opacity: this.getOpacity()}}
+                        width="100vw"
+                        height="100vh"
+                        mapStyle="mapbox://styles/mapbox/streets-v11"
+                        onViewportChange={viewport => this.setState({ viewport })}
+                        mapboxApiAccessToken={MAPBOX_TOKEN}
+                        controller={mapController}
+                    >
+                        {sightings.map(this._renderIcon.bind(this))}
+                    </MapGL>
+                </div>
+
+                <Sidebar opacity={this.getOpacity()} />
+
+                {this.state.popup &&
+                    <SightingPopup location={this.state.popup.location} lat={this.state.popup.lat} long={this.state.popup.long} handleClose={this.onClose.bind(this)}/>
+                }
+
             </div>
+
         );
     }
 };
 
 const styles = {
-
+    container: {
+        position: "fixed"
+    },
+    popupOpen: {
+        position: "fixed",
+        opacity: 0.4
+    }
 }
 

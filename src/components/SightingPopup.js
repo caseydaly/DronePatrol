@@ -5,91 +5,46 @@ import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
+import SharkPic from '../assets/SharkPic.png';
+import CloseIcon from '@material-ui/icons/Close';
 
-const styles = (theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(2),
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing(1),
-        top: theme.spacing(1),
-        color: theme.palette.grey[500],
-    },
-});
 
-const DialogTitle = withStyles(styles)((props) => {
-    const { children, classes, onClose, ...other } = props;
-    return (
-        <MuiDialogTitle disableTypography className={classes.root} {...other}>
-            <Typography variant="h6">{children}</Typography>
-            {onClose ? (
-                <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
-            ) : null}
-        </MuiDialogTitle>
-    );
-});
-
-const DialogContent = withStyles((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(1),
-    },
-}))(MuiDialogActions);
 
 export default function SightingPopup(props) {
-    const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
 
     return (
-        <div style={{ position: "fixed", top: "20%", left: "20%", display: "flex", flexDirection: "column", height: 400, width: 800, paddingLeft: "10%", paddingRight: "10%", background: "white", zIndex: 11 }}>
-            <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    Shark spotted - {props.location}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <div style={{ display: "flex", height: "20%", width: "100%", flexDirection: "row" }}>
-                        <h3>Shark spotted - </h3>
-                        <h4>{props.location}</h4>
+        <div style={{ position: "fixed", top: "20%", left: "20%", display: "flex", flexDirection: "column", height: 350, width: 650, padding: "2%", background: "white", zIndex: 10, borderRadius: 25 }}>
+            <div style={{ display: "flex", height: "10%", width: "100%", flexDirection: "row", background: "#F2F5FA", borderRadius: 25, color: "#0075DF", alignItems: "center", paddingLeft: "3%", justifyContent: "space-between" }}>
+                <div>
+                    <h3><span style={{fontWeight: "bold"}}>Shark spotted - </span> <span style={{fontWeight: "lighter"}}>{props.location}</span></h3>
+                </div>
+                <div style={{ display: "flex", justifySelf: "flex-end" }}>
+                    <IconButton onClick={props.handleClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </div>
+
+            </div>
+            <div style={{ display: "flex", flexDirection: "row", height: "80%", width: "100%", justifyContent: "space-between", marginTop: "3%" }}>
+                <div>
+                    <img src={SharkPic} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "80%", marginLeft: "5%" }}>
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                        <p>Type of Shark:</p>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "row", height: "80%", width: "100%", justifyContent: "space-between" }}>
-                        <div>
-                            <p>image here</p>
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
-                            <div style={{ display: "flex", flexDirection: "row" }}>
-                                <p>Type of Shark:</p>
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "row" }}>
-                                <p>Estimated Size:</p>
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "row" }}>
-                                <p>GPS Coordinates:</p>
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "row" }}>
-                                <p>Distance From Shore:</p>
-                            </div>
-                        </div>
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                        <p>Estimated Size:</p>
                     </div>
-                </DialogContent>
-            </Dialog>
-        </div>
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                        <p>GPS Coordinates:</p>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "row" }}>
+                        <p>Distance From Shore:</p>
+                    </div>
+                </div>
+            </div>
+        </div >
     );
 }
