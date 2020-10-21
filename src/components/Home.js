@@ -4,16 +4,20 @@ import Sidebar from './Sidebar';
 import CustomMapController from './CustomMapController';
 import SharkIconFilledWhite from '../assets/SharkIconFilledWhite.svg';
 import SharkIconFilledRed from '../assets/SharkIconFilledRed.svg';
+import SightingPopup from './SightingPopup';
+
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
 const sightings = [
     {
         lat: 37.609219,
-        long: -122.503051
+        long: -122.503051,
+        location: "Linda Mar"
     },
     {
         lat: 38.351003,
-        long: -123.070669
+        long: -123.070669,
+        location: "Salmon Creek"
     }
 ];
 
@@ -52,13 +56,13 @@ export default class HomeScreen extends React.Component {
         );
     }
 
-    _iconClick(lat, long) {
+    _iconClick(lat, long, location) {
         console.log("clicked icon");
-        this.setState({popup: {lat: lat, long: long}});
+        this.setState({ popup: { lat: lat, long: long, location: location } });
     }
 
     _renderIcon(sighting, i) {
-        const { lat, long } = sighting;
+        const { lat, long, location } = sighting;
         return (
             <Marker
                 key={i}
@@ -68,9 +72,13 @@ export default class HomeScreen extends React.Component {
                 captureClick={true}
                 captureDoubleClick={true}
             >
-                <img src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, lat, long)}/>
+                <img src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, lat, long, location)} />
             </Marker>
         );
+    }
+
+    onClose() {
+        this.setState({popup: null})
     }
 
     render() {
@@ -99,15 +107,14 @@ export default class HomeScreen extends React.Component {
                         redraw={() => <Sidebar viewport={this.state.viewport} location={this.state.closestBeach} />}
                     />
                     {sightings.map(this._renderIcon.bind(this))}
-                    {this.state.popup && <Popup
-                        latitude={this.state.popup.lat}
-                        longitude={this.state.popup.long}
-                        closeButton={true}
-                        closeOnClick={false}
-                        onClose={() => this.setState({ popup: null })}
-                        anchor="top" >
-                        <div>You are here</div>
-                    </Popup>}
+                    {this.state.popup && <HTMLOverlay
+                        captureDrag={true}
+                        captureDoubleClick={true}
+                        captureClick={true}
+                        redraw={() => <SightingPopup lat={this.state.popup.lat} long={this.state.popup.long} location={this.state.popup.location} onClose={this.onClose.bind(this)}/>}
+                    />
+
+                    }
                 </MapGL>
             </div>
         );
