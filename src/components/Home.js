@@ -12,12 +12,18 @@ const sightings = [
     {
         lat: 37.609219,
         long: -122.503051,
-        location: "Linda Mar"
+        location: "Linda Mar",
+        type: "Greate White Shark",
+        size: 13,
+        distanceToShore: 30
     },
     {
         lat: 38.351003,
         long: -123.070669,
-        location: "Salmon Creek"
+        location: "Salmon Creek",
+        type: "Great White Shark",
+        size: 10,
+        distanceToShore: 113
     }
 ];
 
@@ -56,13 +62,13 @@ export default class HomeScreen extends React.Component {
         );
     }
 
-    _iconClick(lat, long, location) {
+    _iconClick(sighting) {
         console.log("clicked icon");
-        this.setState({ popup: { lat: lat, long: long, location: location } });
+        this.setState({ popup: sighting });
     }
 
     _renderIcon(sighting, i) {
-        const { lat, long, location } = sighting;
+        const { lat, long, location, type, size, distanceToShore } = sighting;
         return (
             <Marker
                 key={i}
@@ -72,7 +78,7 @@ export default class HomeScreen extends React.Component {
                 captureClick={true}
                 captureDoubleClick={true}
             >
-                <img src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, lat, long, location)} />
+                <img src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, sighting)} />
             </Marker>
         );
     }
@@ -113,7 +119,7 @@ export default class HomeScreen extends React.Component {
                 <Sidebar opacity={this.getOpacity()} />
 
                 {this.state.popup &&
-                    <SightingPopup location={this.state.popup.location} lat={this.state.popup.lat} long={this.state.popup.long} handleClose={this.onClose.bind(this)}/>
+                    <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)}/>
                 }
 
             </div>
