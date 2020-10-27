@@ -14,7 +14,10 @@ const useStyles = makeStyles({
         border: 0,
         color: 'white',
         height: 48,
-        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)'
+        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+        '&:hover': {
+            backgroundColor: '#0075DF'
+        }
     },
     label: {
         textTransform: 'capitalize',
