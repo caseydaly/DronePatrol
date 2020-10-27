@@ -2,6 +2,7 @@ import React from 'react';
 import MapGL from 'react-map-gl';
 import Divider from '@material-ui/core/Divider';
 import SmsSignUp from "./SmsSignUp";
+import AddSighting from "./AddSighting";
 import SidebarMainContainer from './SidebarMainContainer';
 
 
@@ -46,6 +47,8 @@ class Sidebar extends React.Component {
                 <SidebarMainContainer />
                 <Divider />
                 <SmsSignUp location={this.props.location} onMinimize={this.handleSmsMinimize.bind(this)} onMaximize={this.handleSmsMaximize.bind(this)}/>
+                <Divider />
+                <AddSighting />
             </div>
         );
     }

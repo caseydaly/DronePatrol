@@ -108,7 +108,7 @@ class SmsSignUp extends React.Component {
 
         return (
 
-            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20, height: 250 }}>
+            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20, height: 250, marginBottom: 30 }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                     <div>
                         <SvgIcon
