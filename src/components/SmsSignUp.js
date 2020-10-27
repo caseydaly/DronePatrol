@@ -19,7 +19,8 @@ class SmsSignUp extends React.Component {
             alertRadius: 5,
             phoneNumber: "",
             alertLocation: this.props.location,
-            minimized: false
+            minimized: false,
+            containerStyle: styles.smsSignUpContainerOpen
         };
         this.renderDropdownIcon.bind(this);
         this.renderBody.bind(this);
@@ -52,12 +53,12 @@ class SmsSignUp extends React.Component {
         console.log("Minimizing SMS sign up");
         console.log(event);
         this.state.minimized = !this.state.minimized;
+        this.state.containerStyle = this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen;
         if (this.state.minimized) {
             this.props.onMinimize();
         } else {
             this.props.onMaximize();
         }
-        //this.setState({ minimized: !this.state.minimized })
     }
 
     renderDropdownIcon() {
@@ -108,7 +109,7 @@ class SmsSignUp extends React.Component {
 
         return (
 
-            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20, height: 250, marginBottom: 30 }}>
+            <div style={this.state.containerStyle}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                     <div>
                         <SvgIcon
@@ -126,5 +127,23 @@ class SmsSignUp extends React.Component {
         );
     }
 };
+
+const styles = {
+    smsSignUpContainerClosed: {
+        display: "flex",
+        margin: 0,
+        width: "100%",
+        flexDirection: "column"
+    },
+    smsSignUpContainerOpen: {
+        display: "flex",
+        margin: 0,
+        width: "100%",
+        flexDirection: "column",
+        paddingBottom: 20,
+        height: 250,
+        marginBottom: 30
+    }
+}
 
 export default SmsSignUp;

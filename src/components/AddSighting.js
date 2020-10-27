@@ -29,14 +29,9 @@ class AddSighting extends React.Component {
     }
 
     onDropdownSelect(event) {
-        console.log("Minimizing SMS sign up");
+        console.log("Minimizing add sighting container");
         console.log(event);
-        this.state.minimized = !this.state.minimized;
-        if (this.state.minimized) {
-            this.props.onMinimize();
-        } else {
-            this.props.onMaximize();
-        }
+        this.setState({minimized: !this.state.minimized});
     }
 
     renderDropdownIcon() {
@@ -97,6 +92,7 @@ class AddSighting extends React.Component {
                         {this.renderDropdownIcon()}
                     </div>
                 </div>
+                {this.renderBody()}
             </div>
         );
     }
