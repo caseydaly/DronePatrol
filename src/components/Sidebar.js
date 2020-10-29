@@ -48,7 +48,7 @@ class Sidebar extends React.Component {
                 <Divider />
                 <SmsSignUp location={this.props.location} onMinimize={this.handleSmsMinimize.bind(this)} onMaximize={this.handleSmsMaximize.bind(this)}/>
                 <Divider />
-                <AddSighting onMinimize={this.handleSightingMinimize.bind(this)} onMaximize={this.handleSightingMaximize.bind(this)} />
+                <AddSighting  />
             </div>
         );
     }
