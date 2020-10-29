@@ -3,19 +3,20 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import { ReactComponent as CloseDropdownIcon } from '../assets/CloseDropdownIcon.svg';
 import { ReactComponent as OpenDropdownIcon } from '../assets/OpenDropdownIcon.svg';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles, makeStyles } from '@material-ui/core';
+import { withStyles, makeStyles, Button } from '@material-ui/core';
 import CameraIcon from '../assets/CameraIcon.png';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { ReactComponent as CalendarIcon } from '../assets/CalendarIcon.svg';
-import Dropzone from 'react-dropzone'
+import Dropzone from 'react-dropzone';
 
 class AddSighting extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            minimized: this.props.startCollapsed
+            minimized: this.props.startCollapsed,
+            image: null
         };
         this.renderDropdownIcon.bind(this);
         this.renderBody.bind(this);
@@ -53,6 +54,40 @@ class AddSighting extends React.Component {
         }
     }
 
+    onDropFiles(acceptedFiles) {
+        console.log(acceptedFiles);
+        acceptedFiles.forEach((file) => {
+            const reader = new FileReader()
+
+            reader.onabort = () => console.log('file reading was aborted')
+            reader.onerror = () => console.log('file reading has failed')
+            reader.onload = () => {
+                // Do whatever you want with the file contents
+                const binaryStr = reader.result
+                this.state.image = binaryStr;
+            }
+            reader.readAsArrayBuffer(file)
+        })
+
+    }
+
+    reportSighting() {
+        console.log(this.state.image)
+        const obj = {
+            "image": this.state.image,
+            "lat": 122.1352135,
+            "lon": -117.24875,
+            "date": "10-29-2020"
+        }
+        const options = {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(obj)
+        }
+        const response = fetch("http://0.0.0.0:5000/api/sighting", options);
+        console.log(response);
+    }
+
     renderBody() {
         if (!this.state.minimized) {
             return (
@@ -85,17 +120,21 @@ class AddSighting extends React.Component {
                         </MuiPickersUtilsProvider>
                     </div>
 
-                    <div style={{display: "flex"}}>
-                        <Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}>
+                    <div style={{ display: "flex", width: "100%", height: 100 }}>
+                        <Dropzone onDrop={this.onDropFiles.bind(this)}>
                             {({ getRootProps, getInputProps }) => (
-                                <section>
-                                    <div {...getRootProps()} style={{height: 50, width: "100%", backgroundColor: "#F4F7F9", borderStyle: "dashed", borderRadius: 15, justifyContent: "center"}}>
+                                <section style={{ width: "100%", height: "100%" }}>
+                                    <div {...getRootProps()} style={{ width: "100%", height: "100%", backgroundColor: "#F4F7F9", borderStyle: "dashed", borderRadius: 15, justifyContent: "center" }}>
                                         <input {...getInputProps()} />
                                         <p>Drag 'n' drop some files here, or click to select files</p>
                                     </div>
                                 </section>
                             )}
                         </Dropzone>
+                    </div>
+
+                    <div>
+                        <Button onClick={this.reportSighting.bind(this)}>Send File</Button>
                     </div>
                 </div>
             );
@@ -107,7 +146,7 @@ class AddSighting extends React.Component {
 
         return (
 
-            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20}}>
+            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20 }}>
                 <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", height: 68 }}>
                     <div >
                         <img src={CameraIcon} />
