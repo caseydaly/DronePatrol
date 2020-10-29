@@ -12,8 +12,14 @@ class SidebarMainContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            spots: null
         };
+    }
+
+    async componentDidMount() {
+        const response = await fetch("http://0.0.0.0:5000/api/spots");
+        const spots = await response.json();
+        this.setState({spots: spots})
     }
 
     render() {
@@ -25,7 +31,7 @@ class SidebarMainContainer extends React.Component {
                 <p style={{ fontSize: "16px", marginTop: "8px" }}> Locate sharks around your area. </p>
                 <p style={{ fontWeight: 500, marginTop: "25px", marginBottom: "10px", height: 10 }}>Choose Location</p>
                 <p style={{ marginTop: "0px", paddingTop: 0 }}>
-                    <LocationSelector />
+                    <LocationSelector spots={this.state.spots}/>
                 </p>
                 <p style={{ fontWeight: 500, marginTop: "20px", marginBottom: "5px" }}>Time period</p>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>

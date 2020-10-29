@@ -1,7 +1,10 @@
 from flask import Flask
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
+import scrapeSurfline
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 
 sighting_example = {
@@ -21,7 +24,13 @@ class Sighting(Resource):
     def post(self):
         print("post method")
 
+class Spots(Resource):
+    def get(self):
+        return scrapeSurfline.get_spots()
+
 api.add_resource(Sighting, '/api/sighting')
+
+api.add_resource(Spots, '/api/spots')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

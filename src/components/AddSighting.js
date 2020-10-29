@@ -1,21 +1,15 @@
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
-import { ReactComponent as SmsAlertsIcon } from '../assets/SmsAlertsIcon.svg';
 import { ReactComponent as CloseDropdownIcon } from '../assets/CloseDropdownIcon.svg';
 import { ReactComponent as OpenDropdownIcon } from '../assets/OpenDropdownIcon.svg';
 import IconButton from '@material-ui/core/IconButton';
 import { withStyles, makeStyles } from '@material-ui/core';
-import PhoneEntry from './PhoneEntry';
-import LocationSelector from './LocationSelector';
-import AlertRadius from './AlertRadius';
-import SignUpButton from './SignUpButton';
 import CameraIcon from '../assets/CameraIcon.png';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { ReactComponent as CalendarIcon } from '../assets/CalendarIcon.svg';
 import Dropzone from 'react-dropzone'
-import { CenterFocusStrong } from '@material-ui/icons';
 
 class AddSighting extends React.Component {
     constructor(props) {
