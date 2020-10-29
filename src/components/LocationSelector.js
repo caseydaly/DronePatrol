@@ -10,26 +10,8 @@ import { withStyles } from '@material-ui/core/styles';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { ReactComponent as LocationIcon } from '../assets/LocationIcon.svg';
+import Card from '@material-ui/core/Card';
 
-const suggestions = [
-  { label: 'California' },
-  { label: 'Huntington Beach' },
-  { label: 'Pacific Beach' },
-  { label: 'Ocean Beach' },
-  { label: 'Morro Bay'},
-  { label: 'Pismo Beach'},
-  { label: 'Goleta Beach'},
-  {label: 'Leadbetter Beach'},
-  {label: 'Refugio State Beach'},
-  {label: 'Santa Monica Pier'},
-  {label: 'Windandsea Beach'},
-  {label: 'Upper Trestles'},
-  {label: 'Rincon Point'},
-  {label: 'Asilomar State Beach'},
-  {label: 'Steamer Lane'},
-  {label: 'Mavericks'},
-  {label: 'Salmon Creek'}
-];
 
 
 function renderInput(inputProps) {
@@ -61,8 +43,8 @@ function renderInput(inputProps) {
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.label, query);
-  const parts = parse(suggestion.label, matches);
+  const matches = match(suggestion.name, query);
+  const parts = parse(suggestion.name, matches);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
@@ -94,19 +76,19 @@ function renderSuggestionsContainer(options) {
 }
 
 function getSuggestionValue(suggestion) {
-  return suggestion.label;
+  return suggestion.name;
 }
 
-function getSuggestions(value) {
+function getSuggestions(value, spots) {
   const inputValue = value.trim().toLowerCase();
   const inputLength = inputValue.length;
   let count = 0;
 
   return inputLength === 0
     ? []
-    : suggestions.filter(suggestion => {
+    : spots.filter(spot => {
       const keep =
-        count < 5 && suggestion.label.toLowerCase().slice(0, inputLength) === inputValue;
+        count < 5 && spot.name.toLowerCase().slice(0, inputLength) === inputValue;
 
       if (keep) {
         count += 1;
@@ -123,7 +105,7 @@ const styles = theme => ({
   },
   suggestionsContainerOpen: {
     position: 'absolute',
-    zIndex: 1,
+    zIndex: 5,
     marginTop: theme.spacing.unit,
     left: 0,
     right: 0
@@ -145,12 +127,12 @@ const styles = theme => ({
 class IntegrationAutosuggest extends React.Component {
   state = {
     value: '',
-    suggestions: [],
+    suggestions: []
   };
 
   handleSuggestionsFetchRequested = ({ value }) => {
     this.setState({
-      suggestions: getSuggestions(value),
+      suggestions: getSuggestions(value, this.props.spots),
     });
   };
 
@@ -164,11 +146,13 @@ class IntegrationAutosuggest extends React.Component {
     this.setState({
       value: newValue,
     });
-    this.props.handler(newValue);
+    //this.props.handler(newValue);
   };
 
   render() {
     const { classes } = this.props;
+
+    console.log(this.props);
 
     return (
       <Autosuggest

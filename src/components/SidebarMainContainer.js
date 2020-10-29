@@ -25,6 +25,8 @@ class SidebarMainContainer extends React.Component {
     render() {
         const { classes } = this.props;
 
+        console.log("passing these spots to location selector: " + this.state.spots);
+
         return (
             <div>
                 <h1 style={{ fontSize: "24px", color: "#0075DF", fontWeight: 700, marginBottom: "0px", marginTop: "0px" }}>Drone Patrol</h1>

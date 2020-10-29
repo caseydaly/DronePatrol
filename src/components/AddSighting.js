@@ -15,7 +15,7 @@ class AddSighting extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            minimized: false
+            minimized: this.props.startCollapsed
         };
         this.renderDropdownIcon.bind(this);
         this.renderBody.bind(this);
@@ -107,8 +107,8 @@ class AddSighting extends React.Component {
 
         return (
 
-            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20, height: 250 }}>
-                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <div style={{ display: "flex", margin: 0, width: "100%", flexDirection: "column", paddingBottom: 20}}>
+                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", height: 68 }}>
                     <div >
                         <img src={CameraIcon} />
                     </div>

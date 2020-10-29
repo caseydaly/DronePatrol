@@ -31,13 +31,13 @@ class Sidebar extends React.Component {
         this.setState({ endDate: date });
     };
 
-    handleSmsMinimize() {
-        this.setState({containerStyle: {...styles.container, height: "68%"}});
-    }
+    // handleSmsMinimize() {
+    //     this.setState({containerStyle: {...styles.container, height: "68%"}});
+    // }
 
-    handleSmsMaximize() {
-        this.setState({containerStyle: styles.container});
-    }
+    // handleSmsMaximize() {
+    //     this.setState({containerStyle: styles.container});
+    // }
 
     render() {
 
@@ -46,9 +46,9 @@ class Sidebar extends React.Component {
             <div style={{...this.state.containerStyle, opacity: this.props.opacity}}>
                 <SidebarMainContainer />
                 <Divider />
-                <SmsSignUp location={this.props.location} onMinimize={this.handleSmsMinimize.bind(this)} onMaximize={this.handleSmsMaximize.bind(this)}/>
+                <SmsSignUp location={this.props.location} startCollapsed={true}/>
                 <Divider />
-                <AddSighting  />
+                <AddSighting  startCollapsed={true}/>
             </div>
         );
     }

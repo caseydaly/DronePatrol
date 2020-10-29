@@ -19,8 +19,8 @@ class SmsSignUp extends React.Component {
             alertRadius: 5,
             phoneNumber: "",
             alertLocation: this.props.location,
-            minimized: false,
-            containerStyle: styles.smsSignUpContainerOpen
+            minimized: this.props.startCollapsed,
+            containerStyle: this.props.startCollapsed ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen
         };
         this.renderDropdownIcon.bind(this);
         this.renderBody.bind(this);
@@ -52,13 +52,14 @@ class SmsSignUp extends React.Component {
     onDropdownSelect(event) {
         console.log("Minimizing SMS sign up");
         console.log(event);
-        this.state.minimized = !this.state.minimized;
-        this.state.containerStyle = this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen;
-        if (this.state.minimized) {
-            this.props.onMinimize();
-        } else {
-            this.props.onMaximize();
-        }
+        this.setState({minimized: !this.state.minimized, containerStyle: this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen})
+        // this.state.minimized = !this.state.minimized;
+        // this.state.containerStyle = this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen;
+        // if (this.state.minimized) {
+        //     this.props.onMinimize();
+        // } else {
+        //     this.props.onMaximize();
+        // }
     }
 
     renderDropdownIcon() {
@@ -133,16 +134,16 @@ const styles = {
         display: "flex",
         margin: 0,
         width: "100%",
-        flexDirection: "column"
+        flexDirection: "column",
+        marginBottom: 20
     },
     smsSignUpContainerOpen: {
         display: "flex",
         margin: 0,
         width: "100%",
         flexDirection: "column",
-        paddingBottom: 20,
-        height: 250,
-        marginBottom: 30
+        marginBottom: 20,
+        height: 50
     }
 }
 
