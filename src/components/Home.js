@@ -91,6 +91,10 @@ export default class HomeScreen extends React.Component {
         return this.state.popup == null ? 1 : 0.4;
     }
 
+    changeSearchArea(location) {
+        this.setState({viewport: {latitude: location.lat, longitude: location.lon, zoom: 9, bearing: 0, pitch: 0}});
+    }
+
     render() {
 
         if (this.state.loading) {
@@ -116,7 +120,7 @@ export default class HomeScreen extends React.Component {
                     </MapGL>
                 </div>
 
-                <Sidebar opacity={this.getOpacity()} />
+                <Sidebar opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} />
 
                 {this.state.popup &&
                     <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)}/>

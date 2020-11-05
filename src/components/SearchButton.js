@@ -27,7 +27,7 @@ const useStyles = makeStyles({
 });
 
 
-export default function SearchButton() {
+export default function SearchButton(props) {
     const classes = useStyles();
 
     return (
@@ -43,6 +43,7 @@ export default function SearchButton() {
                     <SvgIcon component={SearchIcon} />
                 </InputAdornment>
             }
+            onClick={props.onClick}
         >
             <p style={{justifySelf: "center", width: "100%"}}>Search</p>
         </Button>

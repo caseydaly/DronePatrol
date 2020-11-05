@@ -16,13 +16,20 @@ sighting_example = {
 
 parser = reqparse.RequestParser()
 parser.add_argument('image')
+parser.add_argument('lat')
+parser.add_argument('lon')
+parser.add_argument('date')
 
 class Sighting(Resource):
     def get(self):
         return {'hello': 'world'}
 
     def post(self):
-        print("post method")
+        args = parser.parse_args()
+        print(args["image"])
+        print(args["lat"])
+        print(args["lon"])
+        print(args["date"])
 
 class Spots(Resource):
     def get(self):

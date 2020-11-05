@@ -146,7 +146,10 @@ class IntegrationAutosuggest extends React.Component {
     this.setState({
       value: newValue,
     });
-    //this.props.handler(newValue);
+  };
+
+  onSuggestionSelected = (event, { suggestion }) => {
+    this.props.handler(suggestion);
   };
 
   render() {
@@ -166,6 +169,7 @@ class IntegrationAutosuggest extends React.Component {
         suggestions={this.state.suggestions}
         onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
         onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
+        onSuggestionSelected={this.onSuggestionSelected}
         renderSuggestionsContainer={renderSuggestionsContainer}
         getSuggestionValue={getSuggestionValue}
         renderSuggestion={renderSuggestion}

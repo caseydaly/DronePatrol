@@ -39,12 +39,17 @@ class Sidebar extends React.Component {
     //     this.setState({containerStyle: styles.container});
     // }
 
+    handleViewportChange(location) {
+        console.log("handling viewport change");
+        this.props.onChange(location);
+    }
+
     render() {
 
         return (
 
             <div style={{...this.state.containerStyle, opacity: this.props.opacity}}>
-                <SidebarMainContainer />
+                <SidebarMainContainer onChange={this.handleViewportChange.bind(this)}/>
                 <Divider />
                 <SmsSignUp location={this.props.location} startCollapsed={true}/>
                 <Divider />
