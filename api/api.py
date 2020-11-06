@@ -31,13 +31,7 @@ class Sighting(Resource):
         print(args["lon"])
         print(args["date"])
 
-class Spots(Resource):
-    def get(self):
-        return scrapeSurfline.get_spots()
-
 api.add_resource(Sighting, '/api/sighting')
-
-api.add_resource(Spots, '/api/spots')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
