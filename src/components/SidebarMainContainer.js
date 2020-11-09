@@ -18,7 +18,7 @@ class SidebarMainContainer extends React.Component {
     }
 
     async componentDidMount() {
-        const response = await fetch("http://0.0.0.0:5000/api/spots");
+        const response = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots");
         const spots = await response.json();
         this.setState({spots: spots})
     }

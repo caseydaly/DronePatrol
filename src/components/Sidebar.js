@@ -4,6 +4,7 @@ import Divider from '@material-ui/core/Divider';
 import SmsSignUp from "./SmsSignUp";
 import AddSighting from "./AddSighting";
 import SidebarMainContainer from './SidebarMainContainer';
+import ReportSightingButton from './ReportSightingButton';
 
 
 
@@ -48,30 +49,30 @@ class Sidebar extends React.Component {
 
         return (
 
-            <div style={{...this.state.containerStyle, opacity: this.props.opacity}}>
-                <SidebarMainContainer onChange={this.handleViewportChange.bind(this)}/>
+            <div style={{ ...this.state.containerStyle, opacity: this.props.opacity }}>
+                <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} />
                 <Divider />
-                <SmsSignUp location={this.props.location} startCollapsed={true}/>
+                <SmsSignUp location={this.props.location} startCollapsed={true} />
                 <Divider />
-                <AddSighting  startCollapsed={true}/>
+                <ReportSightingButton />
             </div>
         );
     }
 };
 
 const styles = {
-    container: { 
-        position: "fixed", 
+    container: {
+        position: "fixed",
         width: "33%",
         height: "86%",
         backgroundColor: "white",
         marginLeft: "2%",
-        marginTop: "2%", 
+        marginTop: "2%",
         paddingRight: "1.65%",
         paddingLeft: "1.65%",
         paddingTop: "0.5%",
-        borderRadius: 25, 
-        overflowY: "auto", 
+        borderRadius: 25,
+        overflowY: "auto",
         cursor: 'default',
         zIndex: 10
     }
