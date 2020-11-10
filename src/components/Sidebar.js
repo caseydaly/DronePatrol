@@ -4,7 +4,10 @@ import Divider from '@material-ui/core/Divider';
 import SmsSignUp from "./SmsSignUp";
 import AddSighting from "./AddSighting";
 import SidebarMainContainer from './SidebarMainContainer';
-import ReportSightingButton from './ReportSightingButton';
+import Button from './Button';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import { ReactComponent as BinocularsIcon } from '../assets/BinocularsIcon.svg';
+import { ReactComponent as NavigateRightArrowIcon } from '../assets/NavigateRightArrowIcon.svg';
 
 
 
@@ -17,7 +20,7 @@ class Sidebar extends React.Component {
             smsContainerCollapsed: false,
             viewport: this.props.viewport,
             containerStyle: styles.container,
-            
+
         };
     }
 
@@ -39,6 +42,7 @@ class Sidebar extends React.Component {
     }
 
     startReportSighting() {
+        console.log("startReportSighting - Sidebar");
         this.props.reportSightingHandler();
     }
 
@@ -51,7 +55,11 @@ class Sidebar extends React.Component {
                 <Divider />
                 <SmsSignUp location={this.props.location} startCollapsed={true} />
                 <Divider />
-                <ReportSightingButton onClick={this.startReportSighting.bind(this)}/>
+                <Button
+                    startIcon={<SvgIcon component={BinocularsIcon} viewBox='0 0 30 30' />}
+                    endIcon={<SvgIcon component={NavigateRightArrowIcon} viewBox='0 0 30 30' />}
+                    text="Report a Shark Sighting"
+                />
             </div>
         );
     }

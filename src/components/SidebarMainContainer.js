@@ -3,10 +3,13 @@ import LocationSelector from './LocationSelector';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
 import InputAdornment from '@material-ui/core/InputAdornment';
-import SvgIcon from '@material-ui/core/SvgIcon';
 import SearchButton from './SearchButton';
 import { ReactComponent as CalendarIcon } from '../assets/CalendarIcon.svg';
 import { withStyles } from '@material-ui/core';
+import Button from './Button';
+import { ReactComponent as SearchIcon } from '../assets/SearchIcon.svg';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import { isThisHour } from 'date-fns';
 
 class SidebarMainContainer extends React.Component {
     constructor(props) {
@@ -20,11 +23,11 @@ class SidebarMainContainer extends React.Component {
     async componentDidMount() {
         const response = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots");
         const spots = await response.json();
-        this.setState({spots: spots})
+        this.setState({ spots: spots })
     }
 
     selectLocationHandler(location) {
-        this.setState({selectedLocation: location});
+        this.setState({ selectedLocation: location });
     }
 
     handleSearch() {
@@ -43,7 +46,7 @@ class SidebarMainContainer extends React.Component {
                 <p style={{ fontSize: "16px", marginTop: "8px" }}> Locate sharks around your area. </p>
                 <p style={{ fontWeight: 500, marginTop: "25px", marginBottom: "10px", height: 10 }}>Choose Location</p>
                 <p style={{ marginTop: "0px", paddingTop: 0 }}>
-                    <LocationSelector spots={this.state.spots} handler={this.selectLocationHandler.bind(this)}/>
+                    <LocationSelector spots={this.state.spots} handler={this.selectLocationHandler.bind(this)} />
                 </p>
                 <p style={{ fontWeight: 500, marginTop: "20px", marginBottom: "5px" }}>Time period</p>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -95,7 +98,11 @@ class SidebarMainContainer extends React.Component {
                     />
                 </MuiPickersUtilsProvider>
                 <div style={{ marginTop: 10, marginBottom: 20 }}>
-                    <SearchButton onClick={this.handleSearch.bind(this)}/>
+                    <Button
+                        startIcon={<SvgIcon component={SearchIcon} viewBox='0 0 30 30' />}
+                        text="Search"
+                        onClick={this.handleSearch.bind(this)}
+                    />
                 </div>
             </div>
         );

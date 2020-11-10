@@ -1,10 +1,12 @@
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import IconButton from '@material-ui/core/IconButton';
-import NavigateBackIcon from '../assets/NavigateBackIcon.svg';
+import { ReactComponent as NavigateBackIcon } from '../assets/NavigateBackIcon.svg';
 import ReportSightingGraphic from '../assets/ReportSightingGraphic.svg';
 import LocationSelector from './LocationSelector';
-import ReportSightingButton from './ReportSightingButton';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import Button from './Button';
+import {ReactComponent as CurrentLocationIcon} from '../assets/CurrentLocationIcon.svg';
 
 export default class ReportLocation extends React.Component {
     constructor(props) {
@@ -25,23 +27,29 @@ export default class ReportLocation extends React.Component {
                     <IconButton
                         edge="end"
                         onClick={this.onNavBackSelect.bind(this)}
+                        style={{ marginLeft: -15, color: "#0075DF" }}
                     >
-                        <SvgIcon component={NavigateBackIcon} viewBox='0 0 30 30' />
+                        <NavigateBeforeIcon
+                            fontSize="large"
+                        />
                     </IconButton>
-                    <h3>Report a Shark Sighting</h3>
+                    <h2 style={{ color: "#0075DF", fontWeight: 800 }}>Report a Shark Sighting</h2>
+                </div>
+                <div style={{ display: "flex" }}>
+                    <h4 style={{ margin: 0, fontWeight: 350 }}>Click anywhere on the map to report a shark sighting.</h4>
+                </div>
+                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                    <img src={ReportSightingGraphic} width={200} height={200} />
                 </div>
                 <div>
-                    <h4>Click anywhere on the map to report a shark sighting.</h4>
-                </div>
-                <div>
-                    <SvgIcon component={ReportSightingGraphic} viewBox='0 0 100 100' />
-                </div>
-                <div>
-                    <h4>Change location</h4>
+                    <h4 style={{ margin: 0, fontWeight: 450, marginBottom: 10 }}>Change location</h4>
                     <LocationSelector />
                 </div>
                 <div>
-                    <ReportSightingButton />
+                    <Button
+                        startIcon={<SvgIcon component={CurrentLocationIcon} viewBox='0 0 30 30' />}
+                        text="Current Location"
+                    />
                 </div>
             </div>
         );
@@ -53,16 +61,16 @@ const styles = {
     container: {
         position: "fixed",
         width: "33%",
-        height: "50%",
         backgroundColor: "white",
         marginLeft: "1%",
         marginTop: "1%",
-        paddingRight: "1.65%",
-        paddingLeft: "1.65%",
-        paddingTop: "0.5%",
+        padding: "1.5%",
         borderRadius: 25,
-        overflowY: "auto",
         cursor: 'default',
         zIndex: 10
+    },
+    iconColorPrimary: {
+        color: ""
     }
+
 }

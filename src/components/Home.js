@@ -100,6 +100,7 @@ export default class HomeScreen extends React.Component {
     }
 
     reportSightingLocationHandler() {
+        console.log("reportSightingLocationHandler - Home")
         this.setState({reportSightingLocation: true, reportSightingFinish: false});
     }
 
