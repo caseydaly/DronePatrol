@@ -16,7 +16,8 @@ class Sidebar extends React.Component {
             endDate: new Date(),
             smsContainerCollapsed: false,
             viewport: this.props.viewport,
-            containerStyle: styles.container
+            containerStyle: styles.container,
+            
         };
     }
 
@@ -32,17 +33,13 @@ class Sidebar extends React.Component {
         this.setState({ endDate: date });
     };
 
-    // handleSmsMinimize() {
-    //     this.setState({containerStyle: {...styles.container, height: "68%"}});
-    // }
-
-    // handleSmsMaximize() {
-    //     this.setState({containerStyle: styles.container});
-    // }
-
     handleViewportChange(location) {
         console.log("handling viewport change");
         this.props.onChange(location);
+    }
+
+    startReportSighting() {
+        this.props.reportSightingHandler();
     }
 
     render() {
@@ -54,7 +51,7 @@ class Sidebar extends React.Component {
                 <Divider />
                 <SmsSignUp location={this.props.location} startCollapsed={true} />
                 <Divider />
-                <ReportSightingButton />
+                <ReportSightingButton onClick={this.startReportSighting.bind(this)}/>
             </div>
         );
     }
@@ -64,10 +61,10 @@ const styles = {
     container: {
         position: "fixed",
         width: "33%",
-        height: "86%",
+        height: "92%",
         backgroundColor: "white",
-        marginLeft: "2%",
-        marginTop: "2%",
+        marginLeft: "1%",
+        marginTop: "1%",
         paddingRight: "1.65%",
         paddingLeft: "1.65%",
         paddingTop: "0.5%",

@@ -5,6 +5,8 @@ import CustomMapController from './CustomMapController';
 import SharkIconFilledWhite from '../assets/SharkIconFilledWhite.svg';
 import SharkIconFilledRed from '../assets/SharkIconFilledRed.svg';
 import SightingPopup from './SightingPopup';
+import ReportLocation from './ReportLocation';
+import ReportFinish from './ReportFinish';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
@@ -40,7 +42,9 @@ export default class HomeScreen extends React.Component {
                 pitch: 0
             },
             closestBeach: "Salmon Creek",
-            popup: null
+            popup: null,
+            reportSightingLocation: false,
+            reportSightingFinish: false
         };
         this._renderIcon.bind(this);
         this._iconClick.bind(this);
@@ -95,6 +99,18 @@ export default class HomeScreen extends React.Component {
         this.setState({viewport: {latitude: location.lat, longitude: location.lon, zoom: 9, bearing: 0, pitch: 0}});
     }
 
+    reportSightingLocationHandler() {
+        this.setState({reportSightingLocation: true, reportSightingFinish: false});
+    }
+
+    reportSightingFinishHandler() {
+        this.setState({reportSightingLocation: false, reportSightingFinish: true});
+    }
+
+    finalizeReportSighting() {
+        this.setState({reportSightingLocation: false, reportSightingFinish: false});
+    }
+
     render() {
 
         if (this.state.loading) {
@@ -120,7 +136,13 @@ export default class HomeScreen extends React.Component {
                     </MapGL>
                 </div>
 
-                <Sidebar opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} />
+                {this.state.reportSightingLocation && <ReportLocation onNavBack={this.finalizeReportSighting.bind(this)}/>}
+
+                {this.state.reportSightingFinish && <ReportFinish />}
+
+                {!this.state.reportSightingLocation && 
+                !this.state.reportSightingFinish &&
+                <Sidebar opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)}/>}
 
                 {this.state.popup &&
                     <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)}/>
