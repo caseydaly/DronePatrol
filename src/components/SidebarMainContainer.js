@@ -15,15 +15,11 @@ class SidebarMainContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            spots: null,
             selectedLocation: null
         };
     }
 
     async componentDidMount() {
-        const response = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots");
-        const spots = await response.json();
-        this.setState({ spots: spots })
     }
 
     selectLocationHandler(location) {
@@ -38,7 +34,7 @@ class SidebarMainContainer extends React.Component {
     render() {
         const { classes } = this.props;
 
-        console.log("passing these spots to location selector: " + this.state.spots);
+        console.log("passing these spots to location selector: " + this.props.spots);
 
         return (
             <div>
@@ -46,7 +42,7 @@ class SidebarMainContainer extends React.Component {
                 <p style={{ fontSize: "16px", marginTop: "8px" }}> Locate sharks around your area. </p>
                 <p style={{ fontWeight: 500, marginTop: "25px", marginBottom: "10px", height: 10 }}>Choose Location</p>
                 <p style={{ marginTop: "0px", paddingTop: 0 }}>
-                    <LocationSelector spots={this.state.spots} handler={this.selectLocationHandler.bind(this)} />
+                    <LocationSelector spots={this.props.spots} handler={this.selectLocationHandler.bind(this)} />
                 </p>
                 <p style={{ fontWeight: 500, marginTop: "20px", marginBottom: "5px" }}>Time period</p>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>

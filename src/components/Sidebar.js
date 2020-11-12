@@ -59,6 +59,7 @@ class Sidebar extends React.Component {
                     startIcon={<SvgIcon component={BinocularsIcon} viewBox='0 0 30 30' />}
                     endIcon={<SvgIcon component={NavigateRightArrowIcon} viewBox='0 0 30 30' />}
                     text="Report a Shark Sighting"
+                    onClick={this.startReportSighting.bind(this)}
                 />
             </div>
         );

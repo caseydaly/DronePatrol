@@ -44,26 +44,39 @@ export default class HomeScreen extends React.Component {
             closestBeach: "Salmon Creek",
             popup: null,
             reportSightingLocation: false,
-            reportSightingFinish: false
+            reportSightingFinish: false,
+            spots: [],
+            userCurrentLat: null,
+            userCurrentLon: null,
+            showSightings: true
         };
         this._renderIcon.bind(this);
         this._iconClick.bind(this);
     }
 
-    componentDidMount(props) {
+    async getSpots() {
+        const response = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots");
+        const spots = await response.json();
+        this.setState({ spots: spots })
+    }
+
+    async componentDidMount(props) {
         navigator.geolocation.getCurrentPosition(
             position => {
                 const { latitude, longitude } = position.coords;
 
                 this.setState({
                     viewport: { latitude: latitude, longitude: longitude, zoom: 5, bearing: 0, pitch: 0 },
-                    loading: false
+                    loading: false,
+                    userCurrentLat: latitude,
+                    userCurrentLon: longitude
                 });
             },
             () => {
                 this.setState({ loading: false });
             }
         );
+
     }
 
     _iconClick(sighting) {
@@ -101,15 +114,24 @@ export default class HomeScreen extends React.Component {
 
     reportSightingLocationHandler() {
         console.log("reportSightingLocationHandler - Home")
-        this.setState({reportSightingLocation: true, reportSightingFinish: false});
+        this.setState({reportSightingLocation: true, reportSightingFinish: false, showSightings: false});
     }
 
     reportSightingFinishHandler() {
-        this.setState({reportSightingLocation: false, reportSightingFinish: true});
+        this.setState({reportSightingLocation: false, reportSightingFinish: true, showSightings: false});
     }
 
     finalizeReportSighting() {
-        this.setState({reportSightingLocation: false, reportSightingFinish: false});
+        this.setState({reportSightingLocation: false, reportSightingFinish: false, showSightings: true});
+    }
+
+    async zoomOnCurrentLocation() {
+        console.log("zooming in home");
+        const closestSpotResponse = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon);
+        const closestSpot = await closestSpotResponse.json();
+        this.setState({
+            viewport: { latitude: closestSpot.lat, longitude: closestSpot.lon, zoom: 9, bearing: 0, pitch: 0 }
+        });
     }
 
     render() {
@@ -133,17 +155,17 @@ export default class HomeScreen extends React.Component {
                         mapboxApiAccessToken={MAPBOX_TOKEN}
                         controller={mapController}
                     >
-                        {sightings.map(this._renderIcon.bind(this))}
+                        {this.state.showSightings && sightings.map(this._renderIcon.bind(this))}
                     </MapGL>
                 </div>
 
-                {this.state.reportSightingLocation && <ReportLocation onNavBack={this.finalizeReportSighting.bind(this)}/>}
+                {this.state.reportSightingLocation && <ReportLocation zoomOnCurrentLocation={this.zoomOnCurrentLocation.bind(this)} onNavBack={this.finalizeReportSighting.bind(this)} spots={this.state.spots}/>}
 
                 {this.state.reportSightingFinish && <ReportFinish />}
 
                 {!this.state.reportSightingLocation && 
                 !this.state.reportSightingFinish &&
-                <Sidebar opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)}/>}
+                <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)}/>}
 
                 {this.state.popup &&
                     <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)}/>

@@ -12,12 +12,21 @@ export default class ReportLocation extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            selectedLocation: null
         }
     }
 
     onNavBackSelect() {
         this.props.onNavBack();
+    }
+
+    selectLocationHandler(location) {
+        this.setState({ selectedLocation: location });
+    }
+
+    zoomOnCurrentLocation() {
+        console.log("Report location zoom");
+        this.props.zoomOnCurrentLocation();
     }
 
     render() {
@@ -43,12 +52,13 @@ export default class ReportLocation extends React.Component {
                 </div>
                 <div>
                     <h4 style={{ margin: 0, fontWeight: 450, marginBottom: 10 }}>Change location</h4>
-                    <LocationSelector />
+                    <LocationSelector spots={this.props.spots} handler={this.selectLocationHandler.bind(this)} />
                 </div>
                 <div>
                     <Button
                         startIcon={<SvgIcon component={CurrentLocationIcon} viewBox='0 0 30 30' />}
                         text="Current Location"
+                        onClick={this.zoomOnCurrentLocation.bind(this)}
                     />
                 </div>
             </div>
