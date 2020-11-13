@@ -21,6 +21,8 @@ export default class ReportLocation extends React.Component {
     }
 
     selectLocationHandler(location) {
+        const zoomFactor = 9;
+        this.props.onChangeLocation(location, zoomFactor)
         this.setState({ selectedLocation: location });
     }
 
@@ -51,13 +53,16 @@ export default class ReportLocation extends React.Component {
                     <img src={ReportSightingGraphic} width={200} height={200} />
                 </div>
                 <div>
-                    <h4 style={{ margin: 0, fontWeight: 450, marginBottom: 10 }}>Change location</h4>
+                    <h4 style={{ margin: 0, fontWeight: 450, marginBottom: 10 }}>Select a beach</h4>
                     <LocationSelector spots={this.props.spots} handler={this.selectLocationHandler.bind(this)} />
                 </div>
-                <div>
+                <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center", marginTop: 10}}>
+                    <p>Or</p>
+                </div>
+                <div style={{marginTop: 10}}>
                     <Button
                         startIcon={<SvgIcon component={CurrentLocationIcon} viewBox='0 0 30 30' />}
-                        text="Current Location"
+                        text="Go To Closest Beach"
                         onClick={this.zoomOnCurrentLocation.bind(this)}
                     />
                 </div>

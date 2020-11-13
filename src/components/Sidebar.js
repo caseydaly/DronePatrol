@@ -38,7 +38,8 @@ class Sidebar extends React.Component {
 
     handleViewportChange(location) {
         console.log("handling viewport change");
-        this.props.onChange(location);
+        const zoomFactor = 9;
+        this.props.onChange(location, zoomFactor);
     }
 
     startReportSighting() {

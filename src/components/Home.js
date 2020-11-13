@@ -41,14 +41,14 @@ export default class HomeScreen extends React.Component {
                 bearing: 0,
                 pitch: 0
             },
-            closestBeach: "Salmon Creek",
             popup: null,
             reportSightingLocation: false,
             reportSightingFinish: false,
             spots: [],
             userCurrentLat: null,
             userCurrentLon: null,
-            showSightings: true
+            showSightings: true,
+            addSightingMarker: null
         };
         this._renderIcon.bind(this);
         this._iconClick.bind(this);
@@ -76,6 +76,7 @@ export default class HomeScreen extends React.Component {
                 this.setState({ loading: false });
             }
         );
+        this.getSpots();
 
     }
 
@@ -108,8 +109,8 @@ export default class HomeScreen extends React.Component {
         return this.state.popup == null ? 1 : 0.4;
     }
 
-    changeSearchArea(location) {
-        this.setState({viewport: {latitude: location.lat, longitude: location.lon, zoom: 9, bearing: 0, pitch: 0}});
+    changeSearchArea(location, zoomFactor) {
+        this.setState({viewport: {latitude: location.lat, longitude: location.lon, zoom: zoomFactor, bearing: 0, pitch: 0}});
     }
 
     reportSightingLocationHandler() {
@@ -134,13 +135,28 @@ export default class HomeScreen extends React.Component {
         });
     }
 
+    handleReportSightingClick(event) {
+        console.log("reporting a click!");
+        this.setState({
+            addSightingMarker:
+                <Marker
+                    key={"report"}
+                    longitude={event.lngLat[0]}
+                    latitude={event.lngLat[1]}
+                    offsetLeft={-30}
+                    captureClick={true}
+                >
+                    <img src={SharkIconFilledRed} />
+                </Marker>
+        });
+    }
+
     render() {
 
         if (this.state.loading) {
             return null;
         }
-
-        const mapController = new CustomMapController();
+        
         return (
 
             <div style={{ width: "100%", height: "100%" }}>
@@ -153,13 +169,14 @@ export default class HomeScreen extends React.Component {
                         mapStyle="mapbox://styles/mapbox/streets-v11"
                         onViewportChange={viewport => this.setState({ viewport })}
                         mapboxApiAccessToken={MAPBOX_TOKEN}
-                        controller={mapController}
+                        onClick={this.state.reportSightingLocation ? this.handleReportSightingClick.bind(this) : undefined}
                     >
                         {this.state.showSightings && sightings.map(this._renderIcon.bind(this))}
+                        {this.state.addSightingMarker}
                     </MapGL>
                 </div>
 
-                {this.state.reportSightingLocation && <ReportLocation zoomOnCurrentLocation={this.zoomOnCurrentLocation.bind(this)} onNavBack={this.finalizeReportSighting.bind(this)} spots={this.state.spots}/>}
+                {this.state.reportSightingLocation && <ReportLocation onChangeLocation={this.changeSearchArea.bind(this)} zoomOnCurrentLocation={this.zoomOnCurrentLocation.bind(this)} onNavBack={this.finalizeReportSighting.bind(this)} spots={this.state.spots}/>}
 
                 {this.state.reportSightingFinish && <ReportFinish />}
 

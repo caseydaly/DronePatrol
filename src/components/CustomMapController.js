@@ -2,6 +2,9 @@
 import { MapController } from 'react-map-gl';
 
 export default class CustomMapController extends MapController {
+    constructor(props) {
+        
+    }
 
     // Override the default event handler
     handleEvent(event) {
