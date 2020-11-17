@@ -56,12 +56,14 @@ class Sidebar extends React.Component {
                 <Divider />
                 <SmsSignUp location={this.props.location} startCollapsed={true} />
                 <Divider />
-                <Button
-                    startIcon={<SvgIcon component={BinocularsIcon} viewBox='0 0 30 30' />}
-                    endIcon={<SvgIcon component={NavigateRightArrowIcon} viewBox='0 0 30 30' />}
-                    text="Report a Shark Sighting"
-                    onClick={this.startReportSighting.bind(this)}
-                />
+                <div style={{marginTop: 20}}>
+                    <Button
+                        startIcon={<SvgIcon component={BinocularsIcon} viewBox='0 0 30 30' />}
+                        endIcon={<SvgIcon component={NavigateRightArrowIcon} viewBox='0 0 30 30' />}
+                        text="Report a Shark Sighting"
+                        onClick={this.startReportSighting.bind(this)}
+                    />
+                </div>
             </div>
         );
     }

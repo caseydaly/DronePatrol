@@ -123,15 +123,15 @@ export default class HomeScreen extends React.Component {
                 <ReportLocation
                     onChangeLocation={this.changeSearchArea.bind(this)}
                     zoomOnCurrentLocation={this.zoomOnCurrentLocation.bind(this)}
-                    onNavBack={this.finalizeReportSighting.bind(this)}
+                    onNavBack={this.navigateMainSidebar.bind(this)}
                     spots={this.state.spots}
                 />,
             showSightings: false
         });
     }
 
-    finalizeReportSighting() {
-        this.setState({ reportSightingLocation: false, reportSightingFinish: false, showSightings: true });
+    navigateMainSidebar() {
+        this.setState({ currentSidebar:  <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> });
     }
 
     async zoomOnCurrentLocation() {

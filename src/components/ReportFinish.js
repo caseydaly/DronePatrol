@@ -6,11 +6,13 @@ import ReportSightingGraphic from '../assets/ReportSightingGraphic.svg';
 import LocationSelector from './LocationSelector';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import Button from './Button';
-import { ReactComponent as CurrentLocationIcon } from '../assets/CurrentLocationIcon.svg';
+import DragAndDropIcon from '../assets/DragAndDropIcon.svg';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from "@date-io/date-fns";
 import { ReactComponent as CalendarIcon } from '../assets/CalendarIcon.svg';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import Dropzone from 'react-dropzone';
+
 
 export default class ReportFinish extends React.Component {
     constructor(props) {
@@ -32,7 +34,25 @@ export default class ReportFinish extends React.Component {
 
     }
 
+    onDropFiles(acceptedFiles) {
+        console.log(acceptedFiles);
+        acceptedFiles.forEach((file) => {
+            const reader = new FileReader()
+
+            reader.onabort = () => console.log('file reading was aborted')
+            reader.onerror = () => console.log('file reading has failed')
+            reader.onload = () => {
+                // Do whatever you want with the file contents
+                const binaryStr = reader.result
+                this.state.image = binaryStr;
+            }
+            reader.readAsArrayBuffer(file)
+        })
+
+    }
+
     render() {
+
         return (
             <div style={styles.container}>
                 <div style={{ display: "flex", flexDirection: "row" }}>
@@ -50,7 +70,7 @@ export default class ReportFinish extends React.Component {
                 <div style={{ display: "flex" }}>
                     <h4 style={{ margin: 0, fontWeight: 350 }}>Add information about the sighting.</h4>
                 </div>
-                <div style={{marginTop:20}}>
+                <div style={{ marginTop: 20 }}>
                     <h4 style={{ margin: 0, fontWeight: 450, marginBottom: 10 }}>Choose a date</h4>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
@@ -81,14 +101,27 @@ export default class ReportFinish extends React.Component {
                 <div style={{ display: "flex", marginTop: 20 }}>
                     <h4 style={{ margin: 0, fontWeight: 350 }}>Click below or drag and drop an image/video</h4>
                 </div>
+
+                <Dropzone onDrop={this.onDropFiles.bind(this)}>
+                    {({ getRootProps, getInputProps }) => (
+                        <section style={{ width: "100%", height: "100%" }}>
+                            <div { ...getRootProps()} style={{display: "flex", width: "100%", height: 250, backgroundColor: "#F4F7F9", borderRadius: 6, marginTop: 20, justifyContent: "center", alignItems: "center" }}>
+                                <input {...getInputProps()} />
+                                <img src={DragAndDropIcon} />
+                            </div>
+                        </section>
+                    )}
+                </Dropzone>;
+
+
                 <div style={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between", marginTop: 20 }}>
-                    <div style={{display: "flex", width: "45%"}}>
+                    <div style={{ display: "flex", width: "45%" }}>
                         <Button
                             text="Submit"
                             onClick={this.onSubmit.bind(this)}
                         />
                     </div>
-                    <div style={{display: "flex", width: "45%"}}>
+                    <div style={{ display: "flex", width: "45%" }}>
                         <Button
                             text="Change Location"
                             onClick={this.onChooseLocation.bind(this)}
