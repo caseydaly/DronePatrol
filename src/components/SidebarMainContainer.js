@@ -15,7 +15,9 @@ class SidebarMainContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedLocation: null
+            selectedLocation: null,
+            startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
+            endDate: new Date(),
         };
     }
 
@@ -30,6 +32,14 @@ class SidebarMainContainer extends React.Component {
         console.log("updating viewport");
         this.props.onChange(this.state.selectedLocation);
     }
+
+    handleStartChange = (date) => {
+        this.setState({ startDate: date });
+    };
+
+    handleEndChange = (date) => {
+        this.setState({ endDate: date });
+    };
 
     render() {
         const { classes } = this.props;

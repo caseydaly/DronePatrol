@@ -18,20 +18,51 @@ export default class ReportFinish extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedLocation: null
+            selectedLocation: null,
+            sightingDate: new Date(),
+            filesSelected: 0,
+            image: null
         }
     }
 
     onNavBackSelect() {
-        //this.props.onNavBack();
+        this.props.onNavBack();
+    }
+
+    // Example POST method implementation:
+    async postData(url = '', data = {}) {
+        // Default options are marked with *
+        const response = await fetch(url, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data) // body data type must match "Content-Type" header
+        });
+        return response.json(); // parses JSON response into native JavaScript objects
     }
 
     onSubmit() {
-
+        const body = {
+            "img": this.state.image,
+            "lat": this.state.selectedLocation[0],
+            "long": this.state.selectedLocation[1],
+            "date": this.state.sightingDate.toDateString()
+        };
+        this.postData('http://0.0.0.0:5000/api/sighting', body)
+            .then(data => {
+                console.log(data); // JSON data parsed by `data.json()` call
+            });
     }
 
     onChooseLocation() {
-
+        this.props.onNavLocation()
     }
 
     onDropFiles(acceptedFiles) {
@@ -46,10 +77,15 @@ export default class ReportFinish extends React.Component {
                 const binaryStr = reader.result
                 this.state.image = binaryStr;
             }
-            reader.readAsArrayBuffer(file)
+            reader.readAsDataURL(file)
+            this.setState({ filesSelected: this.state.filesSelected + 1 })
         })
 
     }
+
+    handleDateChange = (date) => {
+        this.setState({ sightingDate: date });
+    };
 
     render() {
 
@@ -89,8 +125,8 @@ export default class ReportFinish extends React.Component {
                             format="MM/dd/yyyy"
                             id="date-picker-inline"
                             label="Start date"
-                            value={this.state.startDate}
-                            onChange={this.handleStartChange}
+                            value={this.state.sightingDate}
+                            onChange={this.handleDateChange}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
                                 edge: "start"
@@ -105,13 +141,15 @@ export default class ReportFinish extends React.Component {
                 <Dropzone onDrop={this.onDropFiles.bind(this)}>
                     {({ getRootProps, getInputProps }) => (
                         <section style={{ width: "100%", height: "100%" }}>
-                            <div { ...getRootProps()} style={{display: "flex", width: "100%", height: 250, backgroundColor: "#F4F7F9", borderRadius: 6, marginTop: 20, justifyContent: "center", alignItems: "center" }}>
+                            <div {...getRootProps()} style={{ display: "flex", width: "100%", height: 250, backgroundColor: "#F4F7F9", borderRadius: 6, marginTop: 20, justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
                                 <input {...getInputProps()} />
                                 <img src={DragAndDropIcon} />
+                                {this.state.filesSelected === 1 && <p> 1 file selected. </p>}
+                                {this.state.filesSelected > 1 && <p> {this.state.filesSelected} files selected. </p>}
                             </div>
                         </section>
                     )}
-                </Dropzone>;
+                </Dropzone>
 
 
                 <div style={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between", marginTop: 20 }}>

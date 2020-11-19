@@ -22,7 +22,7 @@ export default class ReportLocation extends React.Component {
 
     selectLocationHandler(location) {
         const zoomFactor = 9;
-        this.props.onChangeLocation(location, zoomFactor)
+        this.props.onSelectLocation(location, zoomFactor)
         this.setState({ selectedLocation: location });
     }
 

@@ -117,21 +117,21 @@ export default class HomeScreen extends React.Component {
     }
 
     reportSightingLocationHandler() {
-        console.log("reportSightingLocationHandler - Home")
         this.setState({
             currentSidebar:
                 <ReportLocation
-                    onChangeLocation={this.changeSearchArea.bind(this)}
+                    onSelectLocation={this.changeSearchArea.bind(this)}
                     zoomOnCurrentLocation={this.zoomOnCurrentLocation.bind(this)}
                     onNavBack={this.navigateMainSidebar.bind(this)}
                     spots={this.state.spots}
                 />,
-            showSightings: false
+            showSightings: false,
+            addSightingMarker: null
         });
     }
 
     navigateMainSidebar() {
-        this.setState({ currentSidebar:  <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> });
+        this.setState({ currentSidebar:  <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />, addSightingMarker: null, showSightings: true });
     }
 
     async zoomOnCurrentLocation() {
@@ -156,7 +156,7 @@ export default class HomeScreen extends React.Component {
                 >
                     <img src={SharkIconFilledRed} />
                 </Marker>,
-            currentSidebar: <ReportFinish />,
+            currentSidebar: <ReportFinish onNavBack={this.navigateMainSidebar.bind(this)} onNavLocation={this.reportSightingLocationHandler.bind(this)}/>,
             showSightings: false
         });
     }

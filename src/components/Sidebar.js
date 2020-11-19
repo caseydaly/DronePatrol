@@ -15,8 +15,6 @@ class Sidebar extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
-            endDate: new Date(),
             smsContainerCollapsed: false,
             viewport: this.props.viewport,
             containerStyle: styles.container,
@@ -27,14 +25,6 @@ class Sidebar extends React.Component {
     componentDidMount(props) {
 
     }
-
-    handleStartChange = (date) => {
-        this.setState({ startDate: date });
-    };
-
-    handleEndChange = (date) => {
-        this.setState({ endDate: date });
-    };
 
     handleViewportChange(location) {
         console.log("handling viewport change");

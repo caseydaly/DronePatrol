@@ -30,9 +30,29 @@ def serve(path):
 
 @app.route('/api/sighting', methods=['GET', 'POST'])
 def get_spots():
+    if request.method == 'POST':
+        body = request.json
+        if not "date" in body:
+            return "Must include the 'date' field in request body", 400
+        if not "lat" in body:
+            return "Must include the 'lat' field in request body", 400
+        if not "lon" in body:
+            return "Must include the 'lon' field in request body", 400
+        if not "img" in body:
+            return "Must include the 'img' field in request body", 400
+        print(body['date'])
+        print(type(body['date']))
+        print(body['lat'])
+        print(type(body['lat']))
+        print(body['lon'])
+        print(type(body['lon']))
+        print(body['img'])
+        print(type(body['img']))
+    elif request.method == 'GET':
+        pass
+
     test = "testing"
     return jsonify(test)
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
