@@ -7,7 +7,7 @@ import json
 import os
 import base64
 
-with open('db_info.yaml') as file:
+with open('/var/www/html/DronePatrol/backend/db_info.yaml') as file:
     db_info = yaml.load(file, Loader=yaml.FullLoader)
     mydb = mysql.connector.connect(
         host=db_info['host'],
@@ -16,7 +16,7 @@ with open('db_info.yaml') as file:
         database=db_info['database']
     )
 
-app = Flask(__name__, static_folder='../src/build')
+app = Flask(__name__, static_folder='../build')
 CORS(app)
 
 # Serve React App
