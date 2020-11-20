@@ -29,38 +29,6 @@ export default class ReportFinish extends React.Component {
         this.props.onNavBack();
     }
 
-    // Example POST method implementation:
-    async postData(url = '', data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, *same-origin, omit
-            headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            redirect: 'follow', // manual, *follow, error
-            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: JSON.stringify(data) // body data type must match "Content-Type" header
-        });
-        return response.json(); // parses JSON response into native JavaScript objects
-    }
-
-    onSubmit() {
-        const body = {
-            "img": this.state.image,
-            "lat": this.state.selectedLocation[0],
-            "long": this.state.selectedLocation[1],
-            "date": this.state.sightingDate.toDateString()
-        };
-        this.postData('http://0.0.0.0:5000/api/sighting', body)
-            .then(data => {
-                console.log(data); // JSON data parsed by `data.json()` call
-            });
-    }
-
     onChooseLocation() {
         this.props.onNavLocation()
     }
@@ -75,7 +43,8 @@ export default class ReportFinish extends React.Component {
             reader.onload = () => {
                 // Do whatever you want with the file contents
                 const binaryStr = reader.result
-                this.state.image = binaryStr;
+
+                this.state.image = binaryStr.split(',')[1];
             }
             reader.readAsDataURL(file)
             this.setState({ filesSelected: this.state.filesSelected + 1 })
@@ -86,6 +55,10 @@ export default class ReportFinish extends React.Component {
     handleDateChange = (date) => {
         this.setState({ sightingDate: date });
     };
+
+    onSubmit() {
+        this.props.onSubmit(this.state.image, this.state.sightingDate.toString())
+    }
 
     render() {
 

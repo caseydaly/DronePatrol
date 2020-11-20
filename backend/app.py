@@ -5,6 +5,7 @@ import yaml
 import numpy as np
 import json
 import os
+import base64
 
 with open('db_info.yaml') as file:
     db_info = yaml.load(file, Loader=yaml.FullLoader)
@@ -32,6 +33,8 @@ def serve(path):
 def get_spots():
     if request.method == 'POST':
         body = request.json
+
+        #check that all necessary fields were included
         if not "date" in body:
             return "Must include the 'date' field in request body", 400
         if not "lat" in body:
@@ -40,14 +43,31 @@ def get_spots():
             return "Must include the 'lon' field in request body", 400
         if not "img" in body:
             return "Must include the 'img' field in request body", 400
-        print(body['date'])
-        print(type(body['date']))
-        print(body['lat'])
-        print(type(body['lat']))
-        print(body['lon'])
-        print(type(body['lon']))
-        print(body['img'])
-        print(type(body['img']))
+
+        #check that fields are of the correct type
+        if not (type(body['lat']) is float):
+            return "'lat' field must be of type float", 400
+        if not (type(body['lon']) is float):
+            return "'lon' field must be of type float", 400
+        if not (type(body['img']) is str):
+            return "'img' field must be a base64 encoded string", 400  
+        #stil not sure what type we should expect date to be, str?  
+
+        date = body['date']
+        lat = body['lat']
+        lon = body['lon']
+        image = body['img']
+
+        print(date)
+        print(lat)
+        print(lon)
+        print(image)
+        imgdata = base64.b64decode(image)
+        filename = '/Users/caseydaly/Desktop/some_image.jpg'  # I assume you have a way of picking unique filenames
+        with open(filename, 'wb') as f:
+            f.write(imgdata)
+        
+        
     elif request.method == 'GET':
         pass
 

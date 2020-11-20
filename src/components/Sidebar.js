@@ -23,7 +23,7 @@ class Sidebar extends React.Component {
     }
 
     componentDidMount(props) {
-
+        
     }
 
     handleViewportChange(location) {
