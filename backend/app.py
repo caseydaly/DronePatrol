@@ -7,7 +7,13 @@ import json
 import os
 import base64
 
-with open('/var/www/html/DronePatrol/backend/db_info.yaml') as file:
+dir_path = os.path.dirname(os.path.realpath(__file__))
+if '/Users/caseydaly' in dir_path:
+    db_info_path = 'db_info.yaml'
+else:
+    db_info_path = '/var/www/html/DronePatrol/backend/db_info.yaml'
+
+with open(db_info_path) as file:
     db_info = yaml.load(file, Loader=yaml.FullLoader)
     mydb = mysql.connector.connect(
         host=db_info['host'],

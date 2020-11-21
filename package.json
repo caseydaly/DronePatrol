@@ -2,6 +2,7 @@
   "name": "sharkwatch",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",
     "@material-ui/core": "^4.11.0",
@@ -14,7 +15,6 @@
     "date-fns": "^2.16.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
-    "jest": "24.9.0",
     "material-ui": "^0.20.2",
     "material-ui-pickers": "^2.2.4",
     "react": "^16.13.1",
@@ -50,6 +50,5 @@
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
-    "jest": "^26.6.3"
   }
 }

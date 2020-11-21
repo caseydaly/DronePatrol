@@ -74,13 +74,10 @@ export default class HomeScreen extends React.Component {
                         userCurrentLat: latitude,
                         userCurrentLon: longitude
                     });
-                },
-                () => {
-                    this.state.loading = false
                 }
             );
             this.getSpots();
-            this.setState({currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> })
+            this.setState({loading: false, currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> })
         }
 
     }
@@ -201,8 +198,11 @@ export default class HomeScreen extends React.Component {
     render() {
 
         if (this.state.loading) {
+            console.log("returning null on home component");
             return null;
         }
+
+        console.log("about to render in Home component");
 
         return (
 
