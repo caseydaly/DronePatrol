@@ -135,7 +135,9 @@ export default class HomeScreen extends React.Component {
 
     async zoomOnCurrentLocation() {
         console.log("zooming in home");
-        const closestSpotResponse = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon);
+        const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
+        const localUrl = "http://0.0.0.0:5000/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
+        const closestSpotResponse = await fetch(localUrl);
         const closestSpot = await closestSpotResponse.json();
         this.setState({
             viewport: { latitude: closestSpot.lat, longitude: closestSpot.lon, zoom: 9, bearing: 0, pitch: 0 }
