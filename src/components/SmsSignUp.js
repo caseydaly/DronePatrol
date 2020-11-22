@@ -20,7 +20,8 @@ class SmsSignUp extends React.Component {
             phoneNumber: "",
             alertLocation: this.props.location,
             minimized: this.props.startCollapsed,
-            containerStyle: this.props.startCollapsed ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen
+            containerStyle: this.props.startCollapsed ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen,
+            spots: this.props.spots
         };
         this.renderDropdownIcon.bind(this);
         this.renderBody.bind(this);
@@ -52,7 +53,7 @@ class SmsSignUp extends React.Component {
     onDropdownSelect(event) {
         console.log("Minimizing SMS sign up");
         console.log(event);
-        this.setState({minimized: !this.state.minimized, containerStyle: this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen})
+        this.setState({ minimized: !this.state.minimized, containerStyle: this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen })
         // this.state.minimized = !this.state.minimized;
         // this.state.containerStyle = this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen;
         // if (this.state.minimized) {
@@ -60,6 +61,14 @@ class SmsSignUp extends React.Component {
         // } else {
         //     this.props.onMaximize();
         // }
+    }
+
+    //when we receive new props with the surf spots, we have to rerender manually 
+    componentDidUpdate(prevProps) {
+        if (prevProps.spots.length === 0) // Check if the old spots was empty
+        {
+            this.setState({ spots: this.props.spots });
+        }
     }
 
     renderDropdownIcon() {
@@ -92,7 +101,7 @@ class SmsSignUp extends React.Component {
                         <PhoneEntry handler={this.phoneHandler.bind(this)} />
                     </div>
                     <div style={{ display: "flex" }}>
-                        <LocationSelector value={this.state.alertLocation} handler={this.locationHandler.bind(this)} />
+                        <LocationSelector spots={this.state.spots} value={this.state.alertLocation} handler={this.locationHandler.bind(this)} />
                     </div>
                     <div style={{ display: "flex", marginTop: 10 }}>
                         <AlertRadius default={this.state.alertRadius} handler={this.radiusHandler.bind(this)} />

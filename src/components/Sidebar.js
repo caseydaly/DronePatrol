@@ -51,7 +51,7 @@ class Sidebar extends React.Component {
             <div style={{ ...this.state.containerStyle, opacity: this.props.opacity }}>
                 <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} spots={this.state.spots} />
                 <Divider />
-                <SmsSignUp location={this.props.location} startCollapsed={true} />
+                <SmsSignUp spots={this.state.spots} location={this.props.location} startCollapsed={true} />
                 <Divider />
                 <div style={{marginTop: 20}}>
                     <Button
