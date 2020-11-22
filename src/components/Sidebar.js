@@ -18,7 +18,7 @@ class Sidebar extends React.Component {
             smsContainerCollapsed: false,
             viewport: this.props.viewport,
             containerStyle: styles.container,
-
+            spots: this.props.spots
         };
     }
 
@@ -37,12 +37,19 @@ class Sidebar extends React.Component {
         this.props.reportSightingHandler();
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.spots.length === 0) // Check if the old spots was empty
+        {
+            this.setState({ spots: this.props.spots });
+        }
+    }
+
     render() {
 
         return (
 
             <div style={{ ...this.state.containerStyle, opacity: this.props.opacity }}>
-                <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} />
+                <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} spots={this.state.spots} />
                 <Divider />
                 <SmsSignUp location={this.props.location} startCollapsed={true} />
                 <Divider />

@@ -18,6 +18,7 @@ class SidebarMainContainer extends React.Component {
             selectedLocation: null,
             startDate: new Date(new Date().setDate(new Date().getDate() - 7)),
             endDate: new Date(),
+            spots: this.props.spots
         };
     }
 
@@ -41,10 +42,18 @@ class SidebarMainContainer extends React.Component {
         this.setState({ endDate: date });
     };
 
+    //when we receive new props with the surf spots, we have to rerender manually 
+    componentDidUpdate(prevProps) {
+        if (prevProps.spots.length === 0) // Check if the old spots was empty
+        {
+            this.setState({ spots: this.props.spots });
+        }
+    }
+
     render() {
         const { classes } = this.props;
 
-        console.log("passing these spots to location selector: " + this.props.spots);
+        console.log("passing these spots to location selector: " + this.state.spots);
 
         return (
             <div>
@@ -52,7 +61,7 @@ class SidebarMainContainer extends React.Component {
                 <p style={{ fontSize: "16px", marginTop: "8px" }}> Locate sharks around your area. </p>
                 <p style={{ fontWeight: 500, marginTop: "25px", marginBottom: "10px", height: 10 }}>Choose Location</p>
                 <p style={{ marginTop: "0px", paddingTop: 0 }}>
-                    <LocationSelector spots={this.props.spots} handler={this.selectLocationHandler.bind(this)} />
+                    <LocationSelector spots={this.state.spots} handler={this.selectLocationHandler.bind(this)} />
                 </p>
                 <p style={{ fontWeight: 500, marginTop: "20px", marginBottom: "5px" }}>Time period</p>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>

@@ -77,7 +77,7 @@ export default class ReportFinish extends React.Component {
                     <h2 style={{ color: "#0075DF", fontWeight: 800 }}>Report a Shark Sighting</h2>
                 </div>
                 <div style={{ display: "flex" }}>
-                    <h4 style={{ margin: 0, fontWeight: 350 }}>Add information about the sighting.</h4>
+                    <h4 style={{ margin: 0, fontWeight: 350 }}>Add information about the sighting, or click anywhere on the map to change the shark's location.</h4>
                 </div>
                 <div style={{ marginTop: 20 }}>
                     <h4 style={{ margin: 0, fontWeight: 450, marginBottom: 10 }}>Choose a date</h4>
@@ -126,16 +126,10 @@ export default class ReportFinish extends React.Component {
 
 
                 <div style={{ display: "flex", flexDirection: "row", width: "100%", justifyContent: "space-between", marginTop: 20 }}>
-                    <div style={{ display: "flex", width: "45%" }}>
+                    <div style={{ display: "flex", width: "100%" }}>
                         <Button
                             text="Submit"
                             onClick={this.onSubmit.bind(this)}
-                        />
-                    </div>
-                    <div style={{ display: "flex", width: "45%" }}>
-                        <Button
-                            text="Change Location"
-                            onClick={this.onChooseLocation.bind(this)}
                         />
                     </div>
                 </div>

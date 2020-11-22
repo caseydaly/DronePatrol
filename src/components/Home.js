@@ -56,10 +56,11 @@ export default class HomeScreen extends React.Component {
     }
 
     async getSpots() {
-        const response = await fetch("http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots");
+        const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots";
+        const localUrl = "http://0.0.0.0:5000/api/spots";
+        const response = await fetch(localUrl);
         const spots = await response.json();
         this.state.spots = spots;
-
     }
 
     async componentDidMount(props) {
@@ -67,17 +68,16 @@ export default class HomeScreen extends React.Component {
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const { latitude, longitude } = position.coords;
-    
+
                     this.setState({
                         viewport: { latitude: latitude, longitude: longitude, zoom: 5, bearing: 0, pitch: 0 },
-                        loading: false,
                         userCurrentLat: latitude,
                         userCurrentLon: longitude
                     });
                 }
             );
-            this.getSpots();
-            this.setState({loading: false, currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> })
+            await this.getSpots();
+            this.setState({ loading: false, currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> })
         }
 
     }
@@ -130,7 +130,7 @@ export default class HomeScreen extends React.Component {
     }
 
     navigateMainSidebar() {
-        this.setState({ currentSidebar:  <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />, addSightingMarker: null, showSightings: true });
+        this.setState({ currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />, addSightingMarker: null, showSightings: true });
     }
 
     async zoomOnCurrentLocation() {
@@ -162,21 +162,41 @@ export default class HomeScreen extends React.Component {
         return response.json(); // parses JSON response into native JavaScript objects
     }
 
-    onSubmit(image, date) {
+    async onSubmit(image, date) {
         const body = {
             "img": image,
             "lat": this.state.reportLatitude,
             "lon": this.state.reportLongitude,
             "date": date
         };
-        this.postData('http://0.0.0.0:5000/api/sighting', body)
+        await this.postData('http://0.0.0.0:5001/api/sighting', body)
             .then(data => {
                 console.log(data); // JSON data parsed by `data.json()` call
             });
+
+        this.setState({
+            currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
+            addSightingMarker: null,
+            showSightings: true,
+            viewport: {
+                latitude: this.state.userCurrentLat,
+                longitude: this.state.userCurrentLon,
+                zoom: 5,
+                bearing: 0,
+                pitch: 0
+            },
+        });
     }
 
     handleReportSightingClick(event) {
         console.log("reporting a click!");
+        var newViewport;
+        //if user is already zoomed in a lot, don't zoom them back out on a click
+        if (this.state.viewport.zoom >= 12) {
+            newViewport = this.state.viewport;
+        } else { //else, zoom user in so they can see if their reported sighting was in an accurate location
+            newViewport = { latitude: event.lngLat[1], longitude: event.lngLat[0], zoom: 12, bearing: 0, pitch: 0 }
+        }
         this.setState({
             addSightingMarker:
                 <Marker
@@ -188,21 +208,21 @@ export default class HomeScreen extends React.Component {
                 >
                     <img src={SharkIconFilledRed} />
                 </Marker>,
-            currentSidebar: <ReportFinish onNavBack={this.navigateMainSidebar.bind(this)} onNavLocation={this.reportSightingLocationHandler.bind(this)} onSubmit={this.onSubmit.bind(this)}/>,
+            currentSidebar: <ReportFinish onNavBack={this.navigateMainSidebar.bind(this)} onNavLocation={this.reportSightingLocationHandler.bind(this)} onSubmit={this.onSubmit.bind(this)} />,
             showSightings: false,
             reportLatitude: event.lngLat[1],
-            reportLongitude: event.lngLat[0]
+            reportLongitude: event.lngLat[0],
+            viewport: newViewport
         });
     }
 
     render() {
 
         if (this.state.loading) {
-            console.log("returning null on home component");
             return null;
         }
 
-        console.log("about to render in Home component");
+        console.log("home spots - " + this.state.spots);
 
         return (
 
@@ -216,7 +236,10 @@ export default class HomeScreen extends React.Component {
                         mapStyle="mapbox://styles/mapbox/streets-v11"
                         onViewportChange={viewport => this.setState({ viewport })}
                         mapboxApiAccessToken={MAPBOX_TOKEN}
-                        onClick={this.state.currentSidebar && this.state.currentSidebar.type == ReportLocation ? this.handleReportSightingClick.bind(this) : undefined}
+                        onClick={this.state.currentSidebar &&
+                            this.state.currentSidebar.type == ReportLocation ||
+                            this.state.currentSidebar.type == ReportFinish ?
+                            this.handleReportSightingClick.bind(this) : undefined}
                     >
                         {this.state.showSightings && sightings.map(this._renderIcon.bind(this))}
                         {this.state.addSightingMarker}
