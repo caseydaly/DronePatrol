@@ -17,13 +17,18 @@ class Sidebar extends React.Component {
         this.state = {
             smsContainerCollapsed: false,
             viewport: this.props.viewport,
-            containerStyle: styles.container,
-            spots: this.props.spots
+            containerStyle: styles.containerStyleBase,
+            flexContainerStyle: styles.flexContainerBase,
+            spots: this.props.spots,
+            dividerStyle: {
+                marginTop: 5,
+                marginBottom: 5
+            }
         };
     }
 
     componentDidMount(props) {
-        
+
     }
 
     handleViewportChange(location) {
@@ -44,22 +49,67 @@ class Sidebar extends React.Component {
         }
     }
 
+    handleSmsExpand() {
+        this.setState({
+            dividerStyle: {
+                marginTop: 20,
+                marginBottom: 20
+            }
+        });
+    }
+
+    handleSmsCollapse() {
+        this.setState({
+            dividerStyle: {
+                marginTop: 5,
+                marginBottom: 5
+            }
+        });
+    }
+
+    getContainerStyle() {
+        return {
+            ...this.state.containerStyle,
+            opacity: this.props.opacity,
+            overflowY: this.smsContainerCollapsed ? undefined : "auto"
+        };
+    }
+
+    getFlexContainerStyle() {
+        return {
+            ...this.state.flexContainerStyle,
+            height: this.smsContainerCollapsed ? "95%" : "100%"
+        }
+    }
+
+    
+
     render() {
 
         return (
 
-            <div style={{ ...this.state.containerStyle, opacity: this.props.opacity }}>
-                <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} spots={this.state.spots} />
-                <Divider />
-                <SmsSignUp spots={this.state.spots} location={this.props.location} startCollapsed={true} />
-                <Divider />
-                <div style={{marginTop: 20}}>
-                    <Button
-                        startIcon={<SvgIcon component={BinocularsIcon} viewBox='0 0 30 30' />}
-                        endIcon={<SvgIcon component={NavigateRightArrowIcon} viewBox='0 0 30 30' />}
-                        text="Report a Shark Sighting"
-                        onClick={this.startReportSighting.bind(this)}
-                    />
+            <div style={styles.containerStyleBase}>
+                <div style={styles.flexContainerBase}>
+                    <div >
+                        <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} spots={this.state.spots} />
+                    </div>
+                    <div style={{marginTop: 10, marginBottom: 10}}>
+                        <Divider />
+                    </div>
+                    <div >
+                        <SmsSignUp spots={this.state.spots} location={this.props.location} startCollapsed={true} onMinimize={this.handleSmsCollapse.bind(this)} onMaximize={this.handleSmsExpand.bind(this)} />
+                    </div>
+                    <div style={{marginTop: 10, marginBottom: 10}}>
+                        <Divider />
+                    </div>
+                    <div >
+                        <Button
+                            startIcon={<SvgIcon component={BinocularsIcon} viewBox='0 0 30 30' />}
+                            endIcon={<SvgIcon component={NavigateRightArrowIcon} viewBox='0 0 30 30' />}
+                            text="Report a Shark Sighting"
+                            onClick={this.startReportSighting.bind(this)}
+                        />
+                    </div>
                 </div>
             </div>
         );
@@ -67,7 +117,7 @@ class Sidebar extends React.Component {
 };
 
 const styles = {
-    container: {
+    containerStyleBase: {
         position: "fixed",
         width: "33%",
         height: "92%",
@@ -76,11 +126,21 @@ const styles = {
         marginTop: "1%",
         paddingRight: "1.65%",
         paddingLeft: "1.65%",
-        paddingTop: "0.5%",
+        paddingTop: "2%",
         borderRadius: 25,
-        overflowY: "auto",
         cursor: 'default',
-        zIndex: 10
+        zIndex: 10,
+        overflowY: "auto"
+    },
+    flexContainerBase: { 
+        display: "flex", 
+        flexDirection: "column", 
+        justifyContent: "space-between",
+        height: "95%"
+    },
+    dividerStyle: {
+        marginTop: 10,
+        marginBottom: 10
     }
 }
 

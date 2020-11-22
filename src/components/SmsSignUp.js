@@ -141,17 +141,13 @@ class SmsSignUp extends React.Component {
 const styles = {
     smsSignUpContainerClosed: {
         display: "flex",
-        margin: 0,
         width: "100%",
-        flexDirection: "column"
+        flexDirection: "column",
     },
     smsSignUpContainerOpen: {
         display: "flex",
-        margin: 0,
         width: "100%",
-        flexDirection: "column",
-        marginBottom: 20,
-        height: 50
+        flexDirection: "column"
     }
 }
 
