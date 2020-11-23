@@ -7,6 +7,10 @@ import SharkIconFilledRed from '../assets/SharkIconFilledRed.svg';
 import SightingPopup from './SightingPopup';
 import ReportLocation from './ReportLocation';
 import ReportFinish from './ReportFinish';
+import Dialog from './Dialog';
+import Success from './Success';
+import NoSightings from './NoSightings';
+
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
@@ -253,6 +257,10 @@ export default class HomeScreen extends React.Component {
                 {this.state.popup &&
                     <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)} />
                 }
+
+                <Dialog>
+                    <NoSightings />
+                </Dialog>
 
             </div>
 

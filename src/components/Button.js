@@ -1,11 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import {Button as MaterialUiButton} from '@material-ui/core';
 import { ReactComponent as SharkStrokeWhiteIcon } from '../assets/SharkStrokeWhiteIcon.svg';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SvgIcon from '@material-ui/core/SvgIcon';
 
-const useStyles = makeStyles({
+const styles = {
     root: {
         display: "flex",
         justifyContent: "start",
@@ -13,7 +13,7 @@ const useStyles = makeStyles({
         borderRadius: 6,
         border: 0,
         color: 'white',
-        height: 48,
+        height: (props) => props.height ? props.height : 48,
         boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
         '&:hover': {
             backgroundColor: '#0075DF'
@@ -24,12 +24,12 @@ const useStyles = makeStyles({
         textAlign: "center",
         fontSize: 20
     },
-});
+};
 
 
-export default function Button(props) {
-    const classes = useStyles();
+function Button(props) {
 
+    const {classes, ...other} = props;
     return (
         <MaterialUiButton
             variant="contained"
@@ -58,3 +58,5 @@ export default function Button(props) {
     );
 
 }
+
+export default withStyles(styles)(Button);

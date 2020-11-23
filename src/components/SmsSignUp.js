@@ -51,16 +51,14 @@ class SmsSignUp extends React.Component {
     }
 
     onDropdownSelect(event) {
-        console.log("Minimizing SMS sign up");
-        console.log(event);
-        this.setState({ minimized: !this.state.minimized, containerStyle: this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen })
-        // this.state.minimized = !this.state.minimized;
-        // this.state.containerStyle = this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen;
-        // if (this.state.minimized) {
-        //     this.props.onMinimize();
-        // } else {
-        //     this.props.onMaximize();
-        // }
+        this.state.minimized = !this.state.minimized;
+        this.state.containerStyle = this.state.minimized ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen;
+        if (this.state.minimized) {
+            this.props.onMinimize();
+        } else {
+            this.props.onMaximize();
+        }
+        this.setState({});
     }
 
     //when we receive new props with the surf spots, we have to rerender manually 
