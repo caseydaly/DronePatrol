@@ -5,7 +5,13 @@ import yaml
 import numpy as np
 import json
 import os
+import os.path
 import base64
+import time
+import email.utils
+import datetime
+import random
+import string
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 if '/Users/caseydaly' in dir_path:
@@ -33,6 +39,38 @@ def serve(path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
+    
+def write_image_to_disk(img_data):
+    #create random string of length 8
+    file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
+    file_path = '../' + file_name
+    #make sure we haven't randomly generated this file name before
+    while (not os.path.isfile(file_path)):
+        file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
+        file_path = '../' + file_name
+    with open(file_path, 'wb') as f:
+        f.write(img_data)
+    
+    #return the absolute file path it was written to
+    return os.path.abspath(file_path)
+
+def store_sighting(file_path, date, latitude, longitude, shark_type, length):
+    with mydb.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO
+                Sightings (Date, Latitude, Longitude, ImagePath, Type, Length)
+            VALUES
+                (%(date)s, %(latitude)d, %(longitude)d, %(file_path)s, %(type)s, %(length)d)
+            """, {
+                'date': date,
+                'latitude': latitude,
+                'longitude': longitude,
+                'file_path': file_path,
+                'type': shark_type,
+                'length': length
+            })
+        result = cursor.execute()
+        print("result was " + str(result))
 
 
 @app.route('/api/sighting', methods=['GET', 'POST'])
@@ -57,23 +95,24 @@ def get_spots():
             return "'lon' field must be of type float", 400
         if not (type(body['img']) is str):
             return "'img' field must be a base64 encoded string", 400  
-        #stil not sure what type we should expect date to be, str?  
+        if not (type(body['date']) is int):
+            return "'date' field must be an integer representing a unix time stamp", 400
+        
 
-        date = body['date']
+        date = datetime.datetime.fromtimestamp(body['date']).strftime('%c')
         lat = body['lat']
         lon = body['lon']
-        image = body['img']
-
+        img_encoded = body['img']
+        img_decoded = base64.b64decode(img_encoded)
+        print(img_encoded)
         print(date)
         print(lat)
         print(lon)
-        print(image)
-        imgdata = base64.b64decode(image)
-        filename = '/Users/caseydaly/Desktop/some_image.jpg'  # I assume you have a way of picking unique filenames
-        with open(filename, 'wb') as f:
-            f.write(imgdata)
-        
-        
+        file_path = write_image_to_disk(img_decoded)
+
+        #need a real way to determine shark type and size, use these defaults for now
+        store_sighting(file_path, date, latitude, longitude, "Great White Shark", 12)
+              
     elif request.method == 'GET':
         pass
 
