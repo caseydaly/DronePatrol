@@ -43,11 +43,11 @@ def serve(path):
 def write_image_to_disk(img_data):
     #create random string of length 8
     file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
-    file_path = '../' + file_name
+    file_path = '../../images/' + file_name + ".jpg"
     #make sure we haven't randomly generated this file name before
-    while (not os.path.isfile(file_path)):
+    while (os.path.isfile(file_path)):
         file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
-        file_path = '../' + file_name
+        file_path = '../../images/' + file_name + ".jpg"
     with open(file_path, 'wb') as f:
         f.write(img_data)
     
@@ -55,22 +55,37 @@ def write_image_to_disk(img_data):
     return os.path.abspath(file_path)
 
 def store_sighting(file_path, date, latitude, longitude, shark_type, length):
-    with mydb.cursor() as cursor:
-        cursor.execute("""
-            INSERT INTO
-                Sightings (Date, Latitude, Longitude, ImagePath, Type, Length)
-            VALUES
-                (%(date)s, %(latitude)d, %(longitude)d, %(file_path)s, %(type)s, %(length)d)
-            """, {
-                'date': date,
-                'latitude': latitude,
-                'longitude': longitude,
-                'file_path': file_path,
-                'type': shark_type,
-                'length': length
-            })
-        result = cursor.execute()
-        print("result was " + str(result))
+    cursor = mydb.cursor()
+    result = cursor.execute("""
+        INSERT INTO
+            Sightings (SightingDate, Latitude, Longitude, ImagePath, SharkType, Length)
+        VALUES
+            (%s, %s, %s, %s, %s, %s)
+        """, (date, latitude, longitude, file_path, shark_type, length))
+    mydb.commit()
+
+def get_img_from_path(path):
+    with open(path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        print(encoded_string)
+    return encoded_string
+
+def get_sightings():
+    cursor = mydb.cursor()
+    cursor.execute("Select SightingDate, Latitude, Longitude, ImagePath, SharkType, Length from Sightings;")
+    results = cursor.fetchall()
+    sighting_list = []
+    for obj in results:
+        sighting_list.append({
+            "date": int(obj[0].timestamp()) if obj[0] is not None else obj[0],
+            "lat": float(obj[1]) if obj[1] is not None else obj[1],
+            "lon": float(obj[2]) if obj[2] is not None else obj[2],
+            "img": get_img_from_path(obj[3]) if obj[3] is not None else obj[3],
+            "type": str(obj[4]) if obj[4] is not None else obj[4],
+            "size": int(obj[5]) if obj[5] is not None else obj[5]
+        })
+    mydb.commit()
+    return sighting_list
 
 
 @app.route('/api/sighting', methods=['GET', 'POST'])
@@ -98,26 +113,21 @@ def get_spots():
         if not (type(body['date']) is int):
             return "'date' field must be an integer representing a unix time stamp", 400
         
-
-        date = datetime.datetime.fromtimestamp(body['date']).strftime('%c')
+        date = datetime.datetime.fromtimestamp(body['date']).strftime('%Y-%m-%d %H:%M:%S')
         lat = body['lat']
         lon = body['lon']
         img_encoded = body['img']
         img_decoded = base64.b64decode(img_encoded)
-        print(img_encoded)
-        print(date)
-        print(lat)
-        print(lon)
         file_path = write_image_to_disk(img_decoded)
 
         #need a real way to determine shark type and size, use these defaults for now
-        store_sighting(file_path, date, latitude, longitude, "Great White Shark", 12)
+        store_sighting(file_path, date, lat, lon, "Great White Shark", 12)
+
+        return "Success", 200
               
     elif request.method == 'GET':
-        pass
-
-    test = "testing"
-    return jsonify(test)
+        sighting_list = get_sightings()
+        return jsonify(sighting_list), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port="5001")
