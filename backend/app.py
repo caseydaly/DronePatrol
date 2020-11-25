@@ -54,14 +54,14 @@ def write_image_to_disk(img_data):
     #return the absolute file path it was written to
     return os.path.abspath(file_path)
 
-def store_sighting(file_path, date, latitude, longitude, shark_type, length):
+def store_sighting(file_path, date, latitude, longitude, shark_type, length, distance_to_shore):
     cursor = mydb.cursor()
     result = cursor.execute("""
         INSERT INTO
-            Sightings (SightingDate, Latitude, Longitude, ImagePath, SharkType, Length)
+            Sightings (SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore)
         VALUES
-            (%s, %s, %s, %s, %s, %s)
-        """, (date, latitude, longitude, file_path, shark_type, length))
+            (%s, %s, %s, %s, %s, %s, %s)
+        """, (date, latitude, longitude, file_path, shark_type, length, distance_to_shore))
     mydb.commit()
 
 def get_img_from_path(path):
@@ -72,7 +72,7 @@ def get_img_from_path(path):
 
 def get_sightings():
     cursor = mydb.cursor()
-    cursor.execute("Select SightingDate, Latitude, Longitude, ImagePath, SharkType, Length from Sightings;")
+    cursor.execute("Select SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore from Sightings;")
     results = cursor.fetchall()
     sighting_list = []
     for obj in results:
@@ -82,7 +82,8 @@ def get_sightings():
             "lon": float(obj[2]) if obj[2] is not None else obj[2],
             "img": get_img_from_path(obj[3]) if obj[3] is not None else obj[3],
             "type": str(obj[4]) if obj[4] is not None else obj[4],
-            "size": int(obj[5]) if obj[5] is not None else obj[5]
+            "size": int(obj[5]) if obj[5] is not None else obj[5],
+            "dist_to_shore": int(obj[6]) if obj[6] is not None else obj[6]
         })
     mydb.commit()
     return sighting_list
@@ -120,8 +121,8 @@ def get_spots():
         img_decoded = base64.b64decode(img_encoded)
         file_path = write_image_to_disk(img_decoded)
 
-        #need a real way to determine shark type and size, use these defaults for now
-        store_sighting(file_path, date, lat, lon, "Great White Shark", 12)
+        #need a real way to determine shark type, size, and distance to shore. use these defaults for now
+        store_sighting(file_path, date, lat, lon, "Great White Shark", 12, 112)
 
         return "Success", 200
               
