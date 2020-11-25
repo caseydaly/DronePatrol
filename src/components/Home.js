@@ -53,7 +53,9 @@ export default class HomeScreen extends React.Component {
             addSightingMarker: null,
             currentSidebar: null,
             reportLatitude: null,
-            reportLongitude: null
+            reportLongitude: null,
+            noSightingsDialog: null,
+            sightings: []
         };
         this._renderIcon.bind(this);
         this._iconClick.bind(this);
@@ -65,6 +67,14 @@ export default class HomeScreen extends React.Component {
         const response = await fetch(localUrl);
         const spots = await response.json();
         this.state.spots = spots;
+    }
+
+    async getSightings() {
+        //const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots";
+        const localUrl = "http://0.0.0.0:5001/api/sighting";
+        const response = await fetch(localUrl);
+        const sightings = await response.json();
+        this.state.sightings = sightings;
     }
 
     async componentDidMount(props) {
@@ -81,7 +91,16 @@ export default class HomeScreen extends React.Component {
                 }
             );
             await this.getSpots();
-            this.setState({ loading: false, currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} /> })
+            await this.getSightings();
+            this.setState({
+                loading: false,
+                currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
+                noSightingsDialog: this.state.sightings.length > 3 ?
+                    <Dialog onClose={this.onCloseNoSightingsDialog.bind(this)}>
+                        <NoSightings />
+                    </Dialog>
+                    : null
+            })
         }
 
     }
@@ -222,6 +241,10 @@ export default class HomeScreen extends React.Component {
         });
     }
 
+    onCloseNoSightingsDialog() {
+
+    }
+
     render() {
 
         if (this.state.loading) {
@@ -258,9 +281,7 @@ export default class HomeScreen extends React.Component {
                     <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)} />
                 }
 
-                <Dialog>
-                    <NoSightings />
-                </Dialog>
+                {this.state.noSightingsDialog}
 
             </div>
 
