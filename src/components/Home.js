@@ -10,28 +10,10 @@ import ReportFinish from './ReportFinish';
 import Dialog from './Dialog';
 import Success from './Success';
 import NoSightings from './NoSightings';
-
+import { DistanceUtils } from '../utils/distance';
+import DialogManager from './DialogManager';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
-
-const sightings = [
-    {
-        lat: 37.609219,
-        long: -122.503051,
-        location: "Linda Mar",
-        type: "Greate White Shark",
-        size: 13,
-        distanceToShore: 30
-    },
-    {
-        lat: 38.351003,
-        long: -123.070669,
-        location: "Salmon Creek",
-        type: "Great White Shark",
-        size: 10,
-        distanceToShore: 113
-    }
-];
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
@@ -54,11 +36,12 @@ export default class HomeScreen extends React.Component {
             currentSidebar: null,
             reportLatitude: null,
             reportLongitude: null,
-            noSightingsDialog: null,
+            dialogs: [],
             sightings: []
         };
         this._renderIcon.bind(this);
         this._iconClick.bind(this);
+        this.getSampleData.bind(this)
     }
 
     async getSpots() {
@@ -92,17 +75,29 @@ export default class HomeScreen extends React.Component {
             );
             await this.getSpots();
             await this.getSightings();
+            if (this.state.sightings.length < 3) {
+                const newIndex = this.state.dialogs.length;
+                this.state.dialogs.push(
+                    <NoSightings onClick={async () => {
+                        const sampleData = await this.getSampleData();
+                        this.state.dialogs.splice(newIndex, 1);
+                        this.setState({ sightings: sampleData });
+                    }} />
+                );
+            }
             this.setState({
                 loading: false,
-                currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
-                noSightingsDialog: this.state.sightings.length > 3 ?
-                    <Dialog onClose={this.onCloseNoSightingsDialog.bind(this)}>
-                        <NoSightings />
-                    </Dialog>
-                    : null
+                currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />
             })
         }
 
+    }
+
+    async getSampleData() {
+        const localUrl = "http://0.0.0.0:5001/api/samplesighting";
+        const response = await fetch(localUrl);
+        const sightings = await response.json();
+        return sightings;
     }
 
     _iconClick(sighting) {
@@ -111,11 +106,11 @@ export default class HomeScreen extends React.Component {
     }
 
     _renderIcon(sighting, i) {
-        const { lat, long, location, type, size, distanceToShore } = sighting;
+        const { date, dist_to_shore, img, lat, lon, size, type } = sighting;
         return (
             <Marker
                 key={i}
-                longitude={long}
+                longitude={lon}
                 latitude={lat}
                 offsetLeft={-30}
                 captureClick={true}
@@ -156,12 +151,17 @@ export default class HomeScreen extends React.Component {
         this.setState({ currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />, addSightingMarker: null, showSightings: true });
     }
 
-    async zoomOnCurrentLocation() {
-        console.log("zooming in home");
+    async getClosestSpot(lat, lon) {
         const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
-        const localUrl = "http://0.0.0.0:5000/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
+        const localUrl = "http://0.0.0.0:5000/api/closest?lat=" + lat + "&lon=" + lon;
         const closestSpotResponse = await fetch(localUrl);
         const closestSpot = await closestSpotResponse.json();
+        return closestSpot;
+    }
+
+    async zoomOnCurrentLocation() {
+        console.log("zooming in home");
+        const closestSpot = await this.getClosestSpot(this.state.userCurrentLat, this.state.userCurrentLon);
         this.setState({
             viewport: { latitude: closestSpot.lat, longitude: closestSpot.lon, zoom: 9, bearing: 0, pitch: 0 }
         });
@@ -184,7 +184,7 @@ export default class HomeScreen extends React.Component {
             referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
             body: JSON.stringify(data) // body data type must match "Content-Type" header
         });
-        return response.json(); // parses JSON response into native JavaScript objects
+        return response.status === 200; // parses JSON response into native JavaScript objects
     }
 
     async onSubmit(image, date) {
@@ -199,6 +199,7 @@ export default class HomeScreen extends React.Component {
                 console.log(data); // JSON data parsed by `data.json()` call
             });
 
+        this.state.dialogs.push(<Success />);
         this.setState({
             currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
             addSightingMarker: null,
@@ -209,7 +210,7 @@ export default class HomeScreen extends React.Component {
                 zoom: 5,
                 bearing: 0,
                 pitch: 0
-            },
+            }
         });
     }
 
@@ -241,8 +242,9 @@ export default class HomeScreen extends React.Component {
         });
     }
 
-    onCloseNoSightingsDialog() {
-
+    removeDialog(index) {
+        this.state.dialogs.splice(index, 1);
+        this.setState({});
     }
 
     render() {
@@ -270,7 +272,7 @@ export default class HomeScreen extends React.Component {
                             this.state.currentSidebar.type == ReportFinish ?
                             this.handleReportSightingClick.bind(this) : undefined}
                     >
-                        {this.state.showSightings && sightings.map(this._renderIcon.bind(this))}
+                        {this.state.showSightings && this.state.sightings.map(this._renderIcon.bind(this))}
                         {this.state.addSightingMarker}
                     </MapGL>
                 </div>
@@ -281,7 +283,9 @@ export default class HomeScreen extends React.Component {
                     <SightingPopup sighting={this.state.popup} handleClose={this.onClose.bind(this)} />
                 }
 
-                {this.state.noSightingsDialog}
+                <DialogManager removeDialog={this.removeDialog.bind(this)}>
+                    {this.state.dialogs.map((dialog) => dialog)}
+                </DialogManager>
 
             </div>
 

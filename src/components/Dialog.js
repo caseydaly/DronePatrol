@@ -6,8 +6,17 @@ import IconButton from '@material-ui/core/IconButton';
 
 export default function Dialog(props) {
 
+    var locationStyle;
+    if (!props.location || props.location==="top") {
+        locationStyle="2%";
+    } else if (props.location==="middle") {
+        locationStyle="40%";
+    } else if (props.location==="bottom") {
+        locationStyle="70%";
+    }
+    
     return (
-        <div style={{ position: "fixed", right: "2%", top: "2%", display: "flex", flexDirection: "column", height: "20%", width: "25%", padding: "2%", background: "white", zIndex: 10, borderRadius: 25 }}>
+        <div style={{...styles.baseStyle, top: locationStyle}}>
             <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "flex-end", height: 10, width: "100%" }}>
                 <IconButton
                     edge="end"
@@ -19,4 +28,19 @@ export default function Dialog(props) {
             {props.children}
         </div >
     );
+}
+
+const styles = {
+    baseStyle: { 
+        position: "fixed", 
+        right: "2%", 
+        display: "flex", 
+        flexDirection: "column", 
+        height: "20%", 
+        width: "25%", 
+        padding: "2%", 
+        background: "white", 
+        zIndex: 10, 
+        borderRadius: 25 
+    }
 }

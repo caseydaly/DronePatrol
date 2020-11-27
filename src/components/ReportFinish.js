@@ -57,7 +57,7 @@ export default class ReportFinish extends React.Component {
     };
 
     onSubmit() {
-        this.props.onSubmit(this.state.image, this.state.sightingDate.getTime())
+        this.props.onSubmit(this.state.image, Math.round(this.state.sightingDate.getTime() / 1000))
     }
 
     render() {

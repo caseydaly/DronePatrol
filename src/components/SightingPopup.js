@@ -1,11 +1,5 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import SharkPic from '../assets/SharkPic.png';
 import CloseIcon from '@material-ui/icons/Close';
 import { ReactComponent as GpsCoordinatesIcon } from '../assets/GpsCoordinatesIcon.svg';
@@ -34,7 +28,7 @@ export default function SightingPopup(props) {
             </div>
             <div style={{ display: "flex", flexDirection: "row", height: "80%", width: "100%", justifyContent: "space-between", marginTop: "3%" }}>
                 <div>
-                    <img src={SharkPic} width="100%" height="100%" />
+                    <img src={"data:image/jpg;base64," + props.sighting.img} width="100%" height="100%" />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "80%", marginLeft: "2%", justifyContent: "space-between" }}>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
@@ -52,14 +46,14 @@ export default function SightingPopup(props) {
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                         <SvgIcon component={GpsCoordinatesIcon} />
                         <p style={{ marginLeft: "3%" }}>GPS Coordinates:</p>
-                        <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.lat}</p>
-                        <p style={{ fontWeight: "bold" }}>{props.sighting.long}</p>
+                        <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.lat.toFixed(4)}</p>
+                        <p style={{ fontWeight: "bold" }}>{props.sighting.lon.toFixed(4)}</p>
                     </div>
                     <Divider/>
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                         <SvgIcon component={SharkDistanceIcon} />
                         <p style={{ marginLeft: "3%" }}>Distance From Shore:</p>
-                        <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.distanceToShore} feet</p>
+                        <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.dist_to_shore} feet</p>
                     </div>
                 </div>
             </div>
