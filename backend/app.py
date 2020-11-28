@@ -41,56 +41,6 @@ def serve(path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
-    
-def write_image_to_disk(img_data):
-    #create random string of length 8
-    file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
-    file_path = '../../images/' + file_name + ".jpg"
-    #make sure we haven't randomly generated this file name before
-    while (os.path.isfile(file_path)):
-        file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
-        file_path = '../../images/' + file_name + ".jpg"
-    with open(file_path, 'wb') as f:
-        f.write(img_data)
-    
-    #return the absolute file path it was written to
-    return os.path.abspath(file_path)
-
-def store_sighting(file_path, date, latitude, longitude, shark_type, length, distance_to_shore, location):
-    cursor = mydb.cursor()
-    result = cursor.execute("""
-        INSERT INTO
-            Sightings (SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore, Location)
-        VALUES
-            (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (date, latitude, longitude, file_path, shark_type, length, distance_to_shore, location))
-    mydb.commit()
-
-def get_img_from_path(path):
-    with open(path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-        print(encoded_string)
-    return encoded_string
-
-def get_sightings():
-    cursor = mydb.cursor()
-    cursor.execute("Select SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore, Location from Sightings;")
-    results = cursor.fetchall()
-    sighting_list = []
-    for obj in results:
-        sighting_list.append({
-            "date": int(obj[0].timestamp()) if obj[0] is not None else obj[0],
-            "lat": float(obj[1]) if obj[1] is not None else obj[1],
-            "lon": float(obj[2]) if obj[2] is not None else obj[2],
-            "img": get_img_from_path(obj[3]) if obj[3] is not None else obj[3],
-            "type": str(obj[4]) if obj[4] is not None else obj[4],
-            "size": int(obj[5]) if obj[5] is not None else obj[5],
-            "dist_to_shore": int(obj[6]) if obj[6] is not None else obj[6],
-            "location": str(obj[7]) if obj[7] is not None else obj[7]
-        })
-    mydb.commit()
-    return sighting_list
-
 
 @app.route('/api/sighting', methods=['GET', 'POST'])
 def get_spots():
@@ -154,6 +104,101 @@ def get_sample_sightings():
         })
     mydb.commit()
     return jsonify(sighting_list), 200
+
+@app.route('/api/signup', methods=['POST'])
+def handle_sms_signup():
+    body = request.json
+    #check that all necessary fields were included
+    if not "phone" in body:
+        return "Must include the 'phone' field in request body", 400
+    if not "location" in body:
+        return "Must include the 'location' field in request body", 400
+    if not "radius" in body:
+        return "Must include the 'radius' field in request body", 400
+
+    #check that fields are of the correct type
+    if not (type(body['phone']) is str):
+        return "'phone' field must be of type string", 400
+    if not (type(body['location']) is str):
+        return "'location' field must be of type string", 400
+    if not (type(body['radius']) is int):
+        return "'radius' field must be of type integer", 400
+
+    phone = body['phone']
+    location = body['location']
+    radius = body['radius']
+
+    lat, lon = get_coordinates_from_location(location)
+
+    store_sms_signup(phone, lat, lon, radius)
+
+    return "OK", 200
+
+
+def get_coordinates_from_location(location):
+    url_local = 'http://localhost:5000/api/coords?location=' + location
+    lat, lon = requests.get(url_local).json()
+    return lat, lon
+
+
+def store_sms_signup(phone, lat, lon, radius):
+    cursor = mydb.cursor()
+    result = cursor.execute("""
+        INSERT INTO
+            Alerts (PhoneNumber, Latitude, Longitude, Radius)
+        VALUES
+            (%s, %s, %s, %s)
+        """, (phone, lat, lon, radius))
+    mydb.commit()
+    
+def write_image_to_disk(img_data):
+    #create random string of length 8
+    file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
+    file_path = '../../images/' + file_name + ".jpg"
+    #make sure we haven't randomly generated this file name before
+    while (os.path.isfile(file_path)):
+        file_name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
+        file_path = '../../images/' + file_name + ".jpg"
+    with open(file_path, 'wb') as f:
+        f.write(img_data)
+    
+    #return the absolute file path it was written to
+    return os.path.abspath(file_path)
+
+def store_sighting(file_path, date, latitude, longitude, shark_type, length, distance_to_shore, location):
+    cursor = mydb.cursor()
+    result = cursor.execute("""
+        INSERT INTO
+            Sightings (SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore, Location)
+        VALUES
+            (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (date, latitude, longitude, file_path, shark_type, length, distance_to_shore, location))
+    mydb.commit()
+
+def get_img_from_path(path):
+    with open(path, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+        print(encoded_string)
+    return encoded_string
+
+def get_sightings():
+    cursor = mydb.cursor()
+    cursor.execute("Select SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore, Location from Sightings;")
+    results = cursor.fetchall()
+    sighting_list = []
+    for obj in results:
+        sighting_list.append({
+            "date": int(obj[0].timestamp()) if obj[0] is not None else obj[0],
+            "lat": float(obj[1]) if obj[1] is not None else obj[1],
+            "lon": float(obj[2]) if obj[2] is not None else obj[2],
+            "img": get_img_from_path(obj[3]) if obj[3] is not None else obj[3],
+            "type": str(obj[4]) if obj[4] is not None else obj[4],
+            "size": int(obj[5]) if obj[5] is not None else obj[5],
+            "dist_to_shore": int(obj[6]) if obj[6] is not None else obj[6],
+            "location": str(obj[7]) if obj[7] is not None else obj[7]
+        })
+    mydb.commit()
+    return sighting_list
 
 def get_sighting_location(lat, lon):
     url_local = 'http://localhost:5000/api/closest?lat=' + str(lat) + '&lon=' + str(lon)
