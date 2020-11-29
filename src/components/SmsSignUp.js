@@ -44,6 +44,15 @@ class SmsSignUp extends React.Component {
             .then(data => {
                 console.log(data);
             });
+
+        this.setState({
+            alertRadius: 5,
+            phoneNumber: null,
+            alertLocation: null,
+            minimized: true
+        });
+
+        this.props.onSignUp();
     }
 
     radiusHandler(newValue) {

@@ -12,6 +12,7 @@ import Success from './Success';
 import NoSightings from './NoSightings';
 import DialogManager from './DialogManager';
 import { Requests } from '../utils/requests';
+import SmsSignUpSuccess from './SmsSignUpSuccess';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
@@ -71,10 +72,17 @@ export default class HomeScreen extends React.Component {
             fetch("http://0.0.0.0:5000/api/spots")
                 .then(response => response.json())
                 .then(data => {
-                    this.setState({ 
+                    this.setState({
                         spots: data,
-                        currentSidebar: <Sidebar spots={data} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
-                        loading: false 
+                        currentSidebar:
+                            <Sidebar
+                                spots={data}
+                                opacity={this.getOpacity()}
+                                onChange={this.changeSearchArea.bind(this)}
+                                reportSightingHandler={this.reportSightingLocationHandler.bind(this)}
+                                onSignUp={this.handleSmsSignUp.bind(this)}
+                            />,
+                        loading: false
                     });
                 });
         }
@@ -123,6 +131,11 @@ export default class HomeScreen extends React.Component {
         );
     }
 
+    handleSmsSignUp() {
+        this.state.dialogs.push(<SmsSignUpSuccess />);
+        this.setState({});
+    }
+
     onClose() {
         this.setState({ popup: null })
     }
@@ -150,7 +163,18 @@ export default class HomeScreen extends React.Component {
     }
 
     navigateMainSidebar() {
-        this.setState({ currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />, addSightingMarker: null, showSightings: true });
+        this.setState({
+            currentSidebar:
+                <Sidebar
+                    spots={this.state.spots}
+                    opacity={this.getOpacity()}
+                    onChange={this.changeSearchArea.bind(this)}
+                    reportSightingHandler={this.reportSightingLocationHandler.bind(this)}
+                    onSignUp={this.handleSmsSignUp.bind(this)}
+                />,
+            addSightingMarker: null,
+            showSightings: true
+        });
     }
 
     async getClosestSpot(lat, lon) {
@@ -181,7 +205,14 @@ export default class HomeScreen extends React.Component {
 
         this.state.dialogs.push(<Success />);
         this.setState({
-            currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
+            currentSidebar:
+                <Sidebar
+                    spots={this.state.spots}
+                    opacity={this.getOpacity()}
+                    onChange={this.changeSearchArea.bind(this)}
+                    reportSightingHandler={this.reportSightingLocationHandler.bind(this)}
+                    onSignUp={this.handleSmsSignUp.bind(this)}
+                />,
             addSightingMarker: null,
             showSightings: true,
             viewport: {

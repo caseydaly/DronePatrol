@@ -82,7 +82,7 @@ class Sidebar extends React.Component {
         }
     }
 
-    
+
 
     render() {
 
@@ -93,13 +93,19 @@ class Sidebar extends React.Component {
                     <div >
                         <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} spots={this.state.spots} />
                     </div>
-                    <div style={{marginTop: 10, marginBottom: 10}}>
+                    <div style={{ marginTop: 10, marginBottom: 10 }}>
                         <Divider />
                     </div>
                     <div >
-                        <SmsSignUp spots={this.state.spots} startCollapsed={true} onMinimize={this.handleSmsCollapse.bind(this)} onMaximize={this.handleSmsExpand.bind(this)} />
+                        <SmsSignUp
+                            spots={this.state.spots}
+                            startCollapsed={true}
+                            onMinimize={this.handleSmsCollapse.bind(this)}
+                            onMaximize={this.handleSmsExpand.bind(this)}
+                            onSignUp={this.props.onSignUp}
+                        />
                     </div>
-                    <div style={{marginTop: 10, marginBottom: 10}}>
+                    <div style={{ marginTop: 10, marginBottom: 10 }}>
                         <Divider />
                     </div>
                     <div >
@@ -132,9 +138,9 @@ const styles = {
         zIndex: 10,
         overflowY: "auto"
     },
-    flexContainerBase: { 
-        display: "flex", 
-        flexDirection: "column", 
+    flexContainerBase: {
+        display: "flex",
+        flexDirection: "column",
         justifyContent: "space-between",
         height: "95%"
     },
