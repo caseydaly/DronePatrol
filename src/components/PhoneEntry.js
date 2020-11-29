@@ -35,6 +35,7 @@ export default function PhoneEntry(props) {
     const handler = (event) => {
         const val = event.target.value;
         setValue(previousValue => normalizeInput(val, previousValue));
+        props.onChange(event.target.value);
     };
 
     return (

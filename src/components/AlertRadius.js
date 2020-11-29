@@ -6,14 +6,16 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { ReactComponent as RadiusIcon } from '../assets/RadiusIcon.svg';
 
-const handleChange = value => {
-    console.log(value);
-};
 
-export default function AlertRadius() {
+export default function AlertRadius(props) {
 
-    const { selected, changeSelected } = useState();
+    const [selected, changeSelected ] = useState();
     const classes = useStyles();
+
+    const handleChange = event => {
+        changeSelected(event.target.value);
+        props.handler(event.target.value);
+    };
 
     return (
         <Select

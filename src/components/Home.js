@@ -10,8 +10,8 @@ import ReportFinish from './ReportFinish';
 import Dialog from './Dialog';
 import Success from './Success';
 import NoSightings from './NoSightings';
-import { DistanceUtils } from '../utils/distance';
 import DialogManager from './DialogManager';
+import { Requests } from '../utils/requests';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
 
@@ -41,27 +41,19 @@ export default class HomeScreen extends React.Component {
         };
         this._renderIcon.bind(this);
         this._iconClick.bind(this);
-        this.getSampleData.bind(this)
     }
 
-    async getSpots() {
-        const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots";
-        const localUrl = "http://0.0.0.0:5000/api/spots";
-        const response = await fetch(localUrl);
-        const spots = await response.json();
-        this.state.spots = spots;
+    async getData(url) {
+        var data = fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                console.log("data - " + data);
+                return data;
+            });
     }
 
-    async getSightings() {
-        //const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/spots";
-        const localUrl = "http://0.0.0.0:5001/api/sighting";
-        const response = await fetch(localUrl);
-        const sightings = await response.json();
-        this.state.sightings = sightings;
-    }
-
-    async componentDidMount(props) {
-        if (this.state.loading) {
+    componentDidMount() {
+        if (this.state.userCurrentLon === null || this.state.userCurrentLat === null) {
             navigator.geolocation.getCurrentPosition(
                 position => {
                     const { latitude, longitude } = position.coords;
@@ -73,31 +65,41 @@ export default class HomeScreen extends React.Component {
                     });
                 }
             );
-            await this.getSpots();
-            await this.getSightings();
-            if (this.state.sightings.length < 3) {
-                const newIndex = this.state.dialogs.length;
-                this.state.dialogs.push(
-                    <NoSightings onClick={async () => {
-                        const sampleData = await this.getSampleData();
-                        this.state.dialogs.splice(newIndex, 1);
-                        this.setState({ sightings: sampleData });
-                    }} />
-                );
-            }
-            this.setState({
-                loading: false,
-                currentSidebar: <Sidebar spots={this.state.spots} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />
-            })
         }
 
-    }
+        if (this.state.spots.length < 1) {
+            fetch("http://0.0.0.0:5000/api/spots")
+                .then(response => response.json())
+                .then(data => {
+                    this.setState({ 
+                        spots: data,
+                        currentSidebar: <Sidebar spots={data} opacity={this.getOpacity()} onChange={this.changeSearchArea.bind(this)} reportSightingHandler={this.reportSightingLocationHandler.bind(this)} />,
+                        loading: false 
+                    });
+                });
+        }
 
-    async getSampleData() {
-        const localUrl = "http://0.0.0.0:5001/api/samplesighting";
-        const response = await fetch(localUrl);
-        const sightings = await response.json();
-        return sightings;
+        if (this.state.sightings.length < 1) {
+            fetch("http://0.0.0.0:5001/api/sighting")
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || data.length < 3) {
+                        const newIndex = this.state.dialogs.length;
+                        this.state.dialogs.push(
+                            <NoSightings onClick={() => {
+                                this.state.dialogs.splice(newIndex, 1);
+                                fetch("http://0.0.0.0:5001/api/samplesighting")
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        this.setState({ sightings: data });
+                                    });
+                            }} />
+                        );
+                    } else {
+                        this.setState({ sightings: data });
+                    }
+                });
+        }
     }
 
     _iconClick(sighting) {
@@ -154,9 +156,7 @@ export default class HomeScreen extends React.Component {
     async getClosestSpot(lat, lon) {
         const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
         const localUrl = "http://0.0.0.0:5000/api/closest?lat=" + lat + "&lon=" + lon;
-        const closestSpotResponse = await fetch(localUrl);
-        const closestSpot = await closestSpotResponse.json();
-        return closestSpot;
+        return await Requests.getData(localUrl);
     }
 
     async zoomOnCurrentLocation() {
@@ -167,26 +167,6 @@ export default class HomeScreen extends React.Component {
         });
     }
 
-
-    // Example POST method implementation:
-    async postData(url = '', data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, *same-origin, omit
-            headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            redirect: 'follow', // manual, *follow, error
-            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-            body: JSON.stringify(data) // body data type must match "Content-Type" header
-        });
-        return response.status === 200; // parses JSON response into native JavaScript objects
-    }
-
     async onSubmit(image, date) {
         const body = {
             "img": image,
@@ -194,7 +174,7 @@ export default class HomeScreen extends React.Component {
             "lon": this.state.reportLongitude,
             "date": date
         };
-        await this.postData('http://0.0.0.0:5001/api/sighting', body)
+        await Requests.postData('http://0.0.0.0:5001/api/sighting', body)
             .then(data => {
                 console.log(data); // JSON data parsed by `data.json()` call
             });
@@ -272,7 +252,7 @@ export default class HomeScreen extends React.Component {
                             this.state.currentSidebar.type == ReportFinish ?
                             this.handleReportSightingClick.bind(this) : undefined}
                     >
-                        {this.state.showSightings && this.state.sightings.map(this._renderIcon.bind(this))}
+                        {this.state.showSightings && this.state.sightings && this.state.sightings.map(this._renderIcon.bind(this))}
                         {this.state.addSightingMarker}
                     </MapGL>
                 </div>

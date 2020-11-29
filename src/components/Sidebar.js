@@ -97,7 +97,7 @@ class Sidebar extends React.Component {
                         <Divider />
                     </div>
                     <div >
-                        <SmsSignUp spots={this.state.spots} location={this.props.location} startCollapsed={true} onMinimize={this.handleSmsCollapse.bind(this)} onMaximize={this.handleSmsExpand.bind(this)} />
+                        <SmsSignUp spots={this.state.spots} startCollapsed={true} onMinimize={this.handleSmsCollapse.bind(this)} onMaximize={this.handleSmsExpand.bind(this)} />
                     </div>
                     <div style={{marginTop: 10, marginBottom: 10}}>
                         <Divider />

@@ -128,6 +128,10 @@ def handle_sms_signup():
     location = body['location']
     radius = body['radius']
 
+    print(phone)
+    print(location)
+    print(radius)
+
     lat, lon = get_coordinates_from_location(location)
 
     store_sms_signup(phone, lat, lon, radius)

@@ -9,7 +9,7 @@ import PhoneEntry from './PhoneEntry';
 import LocationSelector from './LocationSelector';
 import AlertRadius from './AlertRadius';
 import SignUpButton from './SignUpButton';
-
+import { Requests } from '../utils/requests';
 import { ReactComponent as AlertsIcon } from '../assets/AlertsIcon.svg';
 
 class SmsSignUp extends React.Component {
@@ -17,8 +17,8 @@ class SmsSignUp extends React.Component {
         super(props)
         this.state = {
             alertRadius: 5,
-            phoneNumber: "",
-            alertLocation: this.props.location,
+            phoneNumber: null,
+            alertLocation: null,
             minimized: this.props.startCollapsed,
             containerStyle: this.props.startCollapsed ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen,
             spots: this.props.spots
@@ -31,23 +31,31 @@ class SmsSignUp extends React.Component {
 
     }
 
-    signUpHandler() {
-        console.log("User signed up for SMS alerts");
+    async signUpHandler() {
+        var body = {
+            "phone": this.state.phoneNumber.replace(/\D/g, ""),
+            "location": this.state.alertLocation,
+            "radius": this.state.alertRadius
+        }
+
+        const localUrl = 'http://0.0.0.0:5001/api/signup'
+
+        await Requests.postData(localUrl, body)
+            .then(data => {
+                console.log(data);
+            });
     }
 
     radiusHandler(newValue) {
-        console.log("User changed radius");
-        console.log(newValue);
+        this.state.alertRadius = newValue;
     }
 
     locationHandler(newValue) {
-        console.log("User changed location");
-        console.log(newValue);
+        this.state.alertLocation = newValue.name;
     }
 
-    phoneHandler(event) {
-        console.log("User changed phone number");
-        console.log(event.target.value);
+    phoneHandler(newValue) {
+        this.state.phoneNumber = newValue;
     }
 
     onDropdownSelect(event) {
@@ -96,7 +104,7 @@ class SmsSignUp extends React.Component {
             return (
                 <div>
                     <div style={{ display: "flex" }}>
-                        <PhoneEntry handler={this.phoneHandler.bind(this)} />
+                        <PhoneEntry onChange={this.phoneHandler.bind(this)} />
                     </div>
                     <div style={{ display: "flex" }}>
                         <LocationSelector spots={this.state.spots} value={this.state.alertLocation} handler={this.locationHandler.bind(this)} />
