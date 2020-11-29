@@ -13,6 +13,9 @@ import { ReactComponent as LocationIcon } from '../assets/LocationIcon.svg';
 import Card from '@material-ui/core/Card';
 
 
+function getFullNameFromSpot(spot) {
+  return spot.name.trim().toLowerCase() + " " + spot.area.trim().toLowerCase() + " " + spot.country.trim().toLowerCase();
+}
 
 function renderInput(inputProps) {
   const { classes, ref, ...other } = inputProps;
@@ -25,7 +28,7 @@ function renderInput(inputProps) {
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <SvgIcon component={LocationIcon}/>
+            <SvgIcon component={LocationIcon} />
           </InputAdornment>
         ),
         inputRef: ref,
@@ -44,19 +47,20 @@ function renderInput(inputProps) {
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.name, query);
-  const parts = parse(suggestion.name, matches);
+  const fullName = suggestion.name + "    -    " + suggestion.area + ", " + suggestion.country
+  const matches = match(fullName, query);
+  const parts = parse(fullName, matches);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
       <div>
         {parts.map((part, index) => {
           return part.highlight ? (
-            <span key={String(index)} style={{ fontWeight: 300 }}>
+            <span key={String(index)} style={{ fontWeight: 300, fontSize: 14 }}>
               {part.text}
             </span>
           ) : (
-              <strong key={String(index)} style={{ fontWeight: 500 }}>
+              <strong key={String(index)} style={{ fontWeight: 500, fontSize: 14 }}>
                 {part.text}
               </strong>
             );
@@ -88,8 +92,14 @@ function getSuggestions(value, spots) {
   return inputLength === 0
     ? []
     : spots.filter(spot => {
+
+      const fullName = getFullNameFromSpot(spot);
+
+      // const keep =
+      //   count < 5 && spot.name.toLowerCase().slice(0, inputLength) === inputValue;
+
       const keep =
-        count < 5 && spot.name.toLowerCase().slice(0, inputLength) === inputValue;
+        count < 5 && fullName.indexOf(inputValue) > -1;
 
       if (keep) {
         count += 1;
