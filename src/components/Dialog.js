@@ -17,7 +17,7 @@ export default function Dialog(props) {
     
     return (
         <div style={{...styles.baseStyle, top: locationStyle}}>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "flex-end", height: 10, width: "100%" }}>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", alignItems: "center", height: 10, width: "100%" }}>
                 <IconButton
                     edge="end"
                     onClick={props.onClose}

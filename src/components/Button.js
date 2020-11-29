@@ -32,7 +32,7 @@ function Button(props) {
     const {classes, ...other} = props;
     return (
         <MaterialUiButton
-            variant="contained"
+            variant={!props.variant ? "contained" : props.variant}
             classes={{
                 root: classes.root,
                 label: classes.label
