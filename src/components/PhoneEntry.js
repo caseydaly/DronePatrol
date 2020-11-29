@@ -60,6 +60,8 @@ export default function PhoneEntry(props) {
             placeholder="Enter phone number"
             value={value}
             onChange={handler}
+            error={props.error}
+            helperText={props.errorMessage}
         />
     );
 

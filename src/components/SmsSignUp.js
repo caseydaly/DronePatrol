@@ -21,7 +21,11 @@ class SmsSignUp extends React.Component {
             alertLocation: null,
             minimized: this.props.startCollapsed,
             containerStyle: this.props.startCollapsed ? styles.smsSignUpContainerClosed : styles.smsSignUpContainerOpen,
-            spots: this.props.spots
+            spots: this.props.spots,
+            invalidPhoneEntry: false,
+            invalidLocationEntry: false,
+            invalidPhoneHelperText: undefined,
+            invalidLocationHelperText: undefined
         };
         this.renderDropdownIcon.bind(this);
         this.renderBody.bind(this);
@@ -38,6 +42,14 @@ class SmsSignUp extends React.Component {
             "radius": this.state.alertRadius
         }
 
+        if (body["phone"].length < 10) {
+            this.setState({ invalidPhoneEntry: true, invalidPhoneHelperText: "Invalid phone number" });
+            return;
+        } else if (body["location"] === null || body["location"] === "") {
+            this.setState({ invalidLocationEntry: true, invalidLocationHelperText: "Select a valid location from the suggestions" });
+            return;
+        }
+
         const localUrl = 'http://0.0.0.0:5001/api/signup'
 
         await Requests.postData(localUrl, body)
@@ -49,7 +61,11 @@ class SmsSignUp extends React.Component {
             alertRadius: 5,
             phoneNumber: null,
             alertLocation: null,
-            minimized: true
+            minimized: true,
+            invalidPhoneEntry: false,
+            invalidLocationEntry: false,
+            invalidLocationHelperText: undefined,
+            invalidPhoneHelperText: undefined
         });
 
         this.props.onSignUp();
@@ -60,11 +76,16 @@ class SmsSignUp extends React.Component {
     }
 
     locationHandler(newValue) {
-        this.state.alertLocation = newValue.name;
+        this.setState({alertLocation: newValue.name, invalidLocationEntry: false, invalidLocationHelperText: undefined});
     }
 
     phoneHandler(newValue) {
-        this.state.phoneNumber = newValue;
+        const temp = newValue.replace(/\D/g, "");
+        if (temp.length === 10 && this.state.invalidPhoneEntry) {
+            this.setState({phoneNumber: newValue, invalidPhoneEntry: false, invalidPhoneHelperText: undefined});
+        } else {
+            this.state.phoneNumber = newValue;
+        }
     }
 
     onDropdownSelect(event) {
@@ -113,10 +134,10 @@ class SmsSignUp extends React.Component {
             return (
                 <div>
                     <div style={{ display: "flex" }}>
-                        <PhoneEntry onChange={this.phoneHandler.bind(this)} />
+                        <PhoneEntry errorMessage={this.state.invalidPhoneHelperText} error={this.state.invalidPhoneEntry} onChange={this.phoneHandler.bind(this)} />
                     </div>
                     <div style={{ display: "flex" }}>
-                        <LocationSelector spots={this.state.spots} value={this.state.alertLocation} handler={this.locationHandler.bind(this)} />
+                        <LocationSelector errorMessage={this.state.invalidLocationHelperText} error={this.state.invalidLocationEntry} spots={this.state.spots} value={this.state.alertLocation} handler={this.locationHandler.bind(this)} />
                     </div>
                     <div style={{ display: "flex", marginTop: 10 }}>
                         <AlertRadius default={this.state.alertRadius} handler={this.radiusHandler.bind(this)} />

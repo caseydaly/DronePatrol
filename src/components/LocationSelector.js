@@ -16,7 +16,6 @@ import Card from '@material-ui/core/Card';
 
 function renderInput(inputProps) {
   const { classes, ref, ...other } = inputProps;
-
   return (
     <TextField
       fullWidth
@@ -38,6 +37,8 @@ function renderInput(inputProps) {
       InputLabelProps={{
         shrink: true
       }}
+      error={inputProps.error}
+      helperText={inputProps.errorMessage}
     />
   );
 }
@@ -178,6 +179,8 @@ class IntegrationAutosuggest extends React.Component {
           placeholder: 'Huntington Beach, CA',
           value: this.state.value,
           onChange: this.handleChange,
+          error: this.props.error,
+          errorMessage: this.props.errorMessage
         }}
       />
     );
