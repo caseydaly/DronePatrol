@@ -95,9 +95,6 @@ function getSuggestions(value, spots) {
 
       const fullName = getFullNameFromSpot(spot);
 
-      // const keep =
-      //   count < 5 && spot.name.toLowerCase().slice(0, inputLength) === inputValue;
-
       const keep =
         count < 5 && fullName.indexOf(inputValue) > -1;
 

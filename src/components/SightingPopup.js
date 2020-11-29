@@ -12,17 +12,24 @@ import Divider from '@material-ui/core/Divider';
 
 
 export default function SightingPopup(props) {
-
+    const date = new Date(props.sighting.date * 1000);
+    const dateString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
     return (
         <div style={{ position: "fixed", top: "20%", left: "20%", display: "flex", flexDirection: "column", height: "40%", width: "50%", padding: "2%", background: "white", zIndex: 10, borderRadius: 25 }}>
             <div style={{ display: "flex", height: "10%", width: "100%", flexDirection: "row", background: "#F2F5FA", borderRadius: 25, color: "#0075DF", alignItems: "center", paddingLeft: "3%", justifyContent: "space-between" }}>
                 <div>
                     <h3><span style={{ fontWeight: "bold" }}>Shark spotted - </span> <span style={{ fontWeight: "lighter" }}>{props.sighting.location}</span></h3>
                 </div>
-                <div style={{ display: "flex", justifySelf: "flex-end" }}>
-                    <IconButton onClick={props.handleClose}>
-                        <CloseIcon />
-                    </IconButton>
+
+                <div style={{display: "flex", flexDirection: "row"}}>
+                    <div style={{ display: "flex" }}>
+                        <h3><span style={{ fontWeight: "lighter" }}> {dateString} </span></h3>
+                    </div>
+                    <div style={{ display: "flex", justifySelf: "flex-end", marginLeft: 10 }}>
+                        <IconButton onClick={props.handleClose}>
+                            <CloseIcon />
+                        </IconButton>
+                    </div>
                 </div>
 
             </div>
@@ -36,20 +43,20 @@ export default function SightingPopup(props) {
                         <p style={{ marginLeft: "3%" }}>Type of Shark:</p>
                         <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.type}</p>
                     </div>
-                    <Divider/>
+                    <Divider />
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                         <SvgIcon component={SharkSizeIcon} />
                         <p style={{ marginLeft: "3%" }}>Estimated Size:</p>
                         <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.size} feet</p>
                     </div>
-                    <Divider/>
+                    <Divider />
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                         <SvgIcon component={GpsCoordinatesIcon} />
                         <p style={{ marginLeft: "3%" }}>GPS Coordinates:</p>
                         <p style={{ fontWeight: "bold", marginLeft: "3%" }}>{props.sighting.lat.toFixed(4)}</p>
                         <p style={{ fontWeight: "bold" }}>{props.sighting.lon.toFixed(4)}</p>
                     </div>
-                    <Divider/>
+                    <Divider />
                     <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                         <SvgIcon component={SharkDistanceIcon} />
                         <p style={{ marginLeft: "3%" }}>Distance From Shore:</p>
