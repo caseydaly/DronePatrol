@@ -10,9 +10,9 @@ export default function Dialog(props) {
     if (!props.location || props.location==="top") {
         locationStyle="2%";
     } else if (props.location==="middle") {
-        locationStyle="40%";
+        locationStyle="32%";
     } else if (props.location==="bottom") {
-        locationStyle="70%";
+        locationStyle="62%";
     }
     
     return (

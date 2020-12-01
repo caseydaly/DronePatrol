@@ -66,6 +66,7 @@ def get_spots():
             return "'img' field must be a base64 encoded string", 400  
         if not (type(body['date']) is int):
             return "'date' field must be an integer representing a unix time stamp", 400
+
         print(body['date'])
         print(datetime.datetime.fromtimestamp(body['date']))
         date = datetime.datetime.fromtimestamp(body['date']).strftime('%Y-%m-%d %H:%M:%S')
@@ -81,7 +82,26 @@ def get_spots():
         return "Success", 200
               
     elif request.method == 'GET':
-        sighting_list = get_sightings()
+        body = request.json
+        #set start and end as min and max (respectively) unix time stamp values in case user didn't supply one of or both values
+        start = 0
+        end = 2147483647
+        if body: #user supplied a body to the request
+            if "start" in body:
+                tempStart = body['start']
+            if "end" in body:
+                tempEnd = body['end']
+            if not "start" in body and not "end" in body:
+                return "must include 'start' and 'end' fields in body of request", 400
+        elif request.args.get("start") or request.args.get("end"): #user used url args
+            tempStart = request.args.get("start").strip()
+            tempEnd = request.args.get("end").strip()
+        try:
+            start = int(tempStart) if tempStart else start
+            end = int(tempEnd) if tempEnd else end
+        except:
+            return "'start' and 'end' fields must be integers representing unix time stamps", 400
+        sighting_list = get_sightings(datetime.datetime.fromtimestamp(start).replace(hour=0, minute=0, second=0), datetime.datetime.fromtimestamp(end).replace(hour=23, minute=59, second=59))
         return jsonify(sighting_list), 200
 
 
@@ -129,6 +149,8 @@ def handle_sms_signup():
     radius = body['radius']
 
     lat, lon = get_coordinates_from_location(location)
+    if lat == None or lon == None:
+        return "Error retrieving coordinates from chosen location", 500
 
     store_sms_signup(phone, lat, lon, radius)
 
@@ -136,9 +158,12 @@ def handle_sms_signup():
 
 
 def get_coordinates_from_location(location):
-    url_local = 'http://localhost:5000/api/coords?location=' + location
-    lat, lon = requests.get(url_local).json()
-    return lat, lon
+    try:
+        url_local = 'http://localhost:5000/api/coords?location=' + location
+        lat, lon = requests.get(url_local).json()
+        return lat, lon
+    except:
+        return None, None
 
 
 def store_sms_signup(phone, lat, lon, radius):
@@ -181,9 +206,16 @@ def get_img_from_path(path):
         print(encoded_string)
     return encoded_string
 
-def get_sightings():
+def get_sightings(start, end):
     cursor = mydb.cursor()
-    cursor.execute("Select SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore, Location from Sightings;")
+    cursor.execute("""
+        SELECT 
+            SightingDate, Latitude, Longitude, ImagePath, SharkType, Length, DistanceToShore, Location
+        FROM
+            Sightings
+        WHERE
+            SightingDate >= %s and SightingDate <= %s;
+        """, (start,end))
     results = cursor.fetchall()
     sighting_list = []
     for obj in results:
@@ -201,21 +233,20 @@ def get_sightings():
     return sighting_list
 
 def get_sighting_location(lat, lon):
-    url_local = 'http://localhost:5000/api/closest?lat=' + str(lat) + '&lon=' + str(lon)
-    spot = requests.get(url_local).json()
-    print(spot['name'])
-    print(spot['area'])
-    print(spot['country'])
-    print(str(distance(lat, lon, spot['lat'], spot['lon'])))
-    #if sighting happened within 3 miles of a beach, report that it happened at that beach
-    if distance(lat, lon, spot['lat'], spot['lon']) < 3:
-        return spot['name']
-    #if a sighting happened within 10 miles of a beach, report the area the beach is located in
-    elif distance(lat, lon, spot['lat'], spot['lon']) < 10:
-        return spot['area']
-    #if it was farther than 10 miles from nearest beach, report the country the sighting was closest to
-    else:
-        return spot['country']
+    try:
+        url_local = 'http://localhost:5000/api/closest?lat=' + str(lat) + '&lon=' + str(lon)
+        spot = requests.get(url_local).json()
+        #if sighting happened within 3 miles of a beach, report that it happened at that beach
+        if distance(lat, lon, spot['lat'], spot['lon']) < 3:
+            return spot['name']
+        #if a sighting happened within 10 miles of a beach, report the area the beach is located in
+        elif distance(lat, lon, spot['lat'], spot['lon']) < 10:
+            return spot['area']
+        #if it was farther than 10 miles from nearest beach, report the country the sighting was closest to
+        else:
+            return spot['country']
+    except:
+        return None
 
 def distance(lat1, lon1, lat2, lon2):
 

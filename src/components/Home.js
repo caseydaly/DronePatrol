@@ -78,7 +78,7 @@ export default class HomeScreen extends React.Component {
                             <Sidebar
                                 spots={data}
                                 opacity={this.getOpacity()}
-                                onChange={this.changeSearchArea.bind(this)}
+                                onChange={this.handleSightingSearch.bind(this)}
                                 reportSightingHandler={this.reportSightingLocationHandler.bind(this)}
                                 onSignUp={this.handleSmsSignUp.bind(this)}
                             />,
@@ -88,7 +88,9 @@ export default class HomeScreen extends React.Component {
         }
 
         if (this.state.sightings.length < 1) {
-            fetch("http://0.0.0.0:5001/api/sighting")
+            const start = Math.round(new Date(new Date().setDate(new Date().getDate() - 7)).getTime() / 1000).toString();
+            const end = Math.round((new Date().getTime()) / 1000).toString();
+            fetch("http://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
                 .then(response => response.json())
                 .then(data => {
                     if (!data || data.length < 3) {
@@ -103,9 +105,8 @@ export default class HomeScreen extends React.Component {
                                     });
                             }} />
                         );
-                    } else {
-                        this.setState({ sightings: data });
                     }
+                    this.setState({ sightings: data });
                 });
         }
     }
@@ -144,6 +145,19 @@ export default class HomeScreen extends React.Component {
         return this.state.popup == null ? 1 : 0.4;
     }
 
+    handleSightingSearch(location, zoomFactor, startDate, endDate) {
+        var start = Math.round(startDate.getTime() / 1000)
+        var end = Math.round(endDate.getTime() / 1000)
+        fetch("http://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
+            .then(response => response.json())
+            .then(data => {
+                this.setState({ sightings: data });
+            });
+        if (location) {
+            this.changeSearchArea(location, zoomFactor);
+        }
+    }
+
     changeSearchArea(location, zoomFactor) {
         this.setState({ viewport: { latitude: location.lat, longitude: location.lon, zoom: zoomFactor, bearing: 0, pitch: 0 } });
     }
@@ -168,7 +182,7 @@ export default class HomeScreen extends React.Component {
                 <Sidebar
                     spots={this.state.spots}
                     opacity={this.getOpacity()}
-                    onChange={this.changeSearchArea.bind(this)}
+                    onChange={this.handleSightingSearch.bind(this)}
                     reportSightingHandler={this.reportSightingLocationHandler.bind(this)}
                     onSignUp={this.handleSmsSignUp.bind(this)}
                 />,
@@ -209,7 +223,7 @@ export default class HomeScreen extends React.Component {
                 <Sidebar
                     spots={this.state.spots}
                     opacity={this.getOpacity()}
-                    onChange={this.changeSearchArea.bind(this)}
+                    onChange={this.handleSightingSearch.bind(this)}
                     reportSightingHandler={this.reportSightingLocationHandler.bind(this)}
                     onSignUp={this.handleSmsSignUp.bind(this)}
                 />,

@@ -31,7 +31,8 @@ class SidebarMainContainer extends React.Component {
 
     handleSearch() {
         console.log("updating viewport");
-        this.props.onChange(this.state.selectedLocation);
+        this.props.onChange(this.state.selectedLocation, this.state.startDate, this.state.endDate);
+        
     }
 
     handleStartChange = (date) => {

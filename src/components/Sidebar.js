@@ -31,10 +31,10 @@ class Sidebar extends React.Component {
 
     }
 
-    handleViewportChange(location) {
+    handleSightingSearch(location, startDate, endDate) {
         console.log("handling viewport change");
         const zoomFactor = 9;
-        this.props.onChange(location, zoomFactor);
+        this.props.onChange(location, zoomFactor, startDate, endDate);
     }
 
     startReportSighting() {
@@ -91,7 +91,7 @@ class Sidebar extends React.Component {
             <div style={styles.containerStyleBase}>
                 <div style={styles.flexContainerBase}>
                     <div >
-                        <SidebarMainContainer onChange={this.handleViewportChange.bind(this)} spots={this.state.spots} />
+                        <SidebarMainContainer onChange={this.handleSightingSearch.bind(this)} spots={this.state.spots} />
                     </div>
                     <div style={{ marginTop: 10, marginBottom: 10 }}>
                         <Divider />
