@@ -1,15 +1,19 @@
 # Drone Patrol documentation
 
-### Running
+### Deploying
 
-I still have to work out some kinks with deploying this bad boy with Apache on our Ubunutu server, but for the time being, navigate to server and run
+For the time being, we have to do manual deployments until we can get a CI/CD pipeline going.
 
-```python3 app.py```
+That being said, to deploy, log in to the server and pull all of the recent code changes. Then build the client code/react portion of the project by running...
 
-This will allow you to run the app in the browser of another computer when you navigate to the EC2 public domain address for the instance. After running the above command in the server directory, go to AWS and find your EC2 "Public IPv4 DNS", which is something like ec2-54-176-43-108.us-west-1.compute.amazonaws.com (it changes frequently based on what AWS gives you when you boot up the instance). With this, go to your browser and type in the URL http://<public_ipv4_dns_from_above>:5000/ because flask should be running on port 5000. I have found that its easiest to work with Chrome, and Safari has given me some troubles rendering the predicted images.
+```yarn build```
 
-If you would like to just test it locally (although the predictions will happen insanely slow), simply run the same command above in the server directory, and then in your (preferably Chrome) browser go to http://localhost:5000/
+from the root directory of the project. Once its all built, you simply need to restart the Apache server with 
+
+```sudo service apache2 restart```
 
 ### Testing
 
-The tests are located in server/tests, and you can run them by running "pytest" from the server directory. To add more tests, add a test method in a file in the tests directory, and the test method name must start with "test_".
+The server side python/flask tests are located in backend/tests, and you can run them by running "pytest" from the backend directory. To add more tests, add a test method in a file in the tests directory, and the test method name must start with "test_".
+
+React tests are going to be done with Jest, and I don't have much on this so far but will be looking into it soon.
