@@ -54,7 +54,6 @@ class SmsSignUp extends React.Component {
 
         await Requests.postData(localUrl, body)
             .then(data => {
-                console.log(data);
             });
 
         this.setState({

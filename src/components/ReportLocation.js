@@ -27,7 +27,6 @@ export default class ReportLocation extends React.Component {
     }
 
     zoomOnCurrentLocation() {
-        console.log("Report location zoom");
         this.props.zoomOnCurrentLocation();
     }
 

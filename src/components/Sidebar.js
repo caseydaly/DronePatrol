@@ -2,7 +2,6 @@ import React from 'react';
 import MapGL from 'react-map-gl';
 import Divider from '@material-ui/core/Divider';
 import SmsSignUp from "./SmsSignUp";
-import AddSighting from "./AddSighting";
 import SidebarMainContainer from './SidebarMainContainer';
 import Button from './Button';
 import SvgIcon from '@material-ui/core/SvgIcon';
@@ -32,13 +31,11 @@ class Sidebar extends React.Component {
     }
 
     handleSightingSearch(location, startDate, endDate) {
-        console.log("handling viewport change");
         const zoomFactor = 9;
         this.props.onChange(location, zoomFactor, startDate, endDate);
     }
 
     startReportSighting() {
-        console.log("startReportSighting - Sidebar");
         this.props.reportSightingHandler();
     }
 

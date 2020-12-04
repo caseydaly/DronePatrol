@@ -30,7 +30,6 @@ class SidebarMainContainer extends React.Component {
     }
 
     handleSearch() {
-        console.log("updating viewport");
         this.props.onChange(this.state.selectedLocation, this.state.startDate, this.state.endDate);
         
     }
@@ -53,8 +52,6 @@ class SidebarMainContainer extends React.Component {
 
     render() {
         const { classes } = this.props;
-
-        console.log("passing these spots to location selector: " + this.state.spots);
 
         return (
             <div style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between"}}>

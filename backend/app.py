@@ -14,6 +14,7 @@ import random
 import string
 from math import radians, cos, sin, asin, sqrt
 import requests
+import OpenSSL
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 if '/Users/caseydaly' in dir_path:
@@ -67,8 +68,6 @@ def get_spots():
         if not (type(body['date']) is int):
             return "'date' field must be an integer representing a unix time stamp", 400
 
-        print(body['date'])
-        print(datetime.datetime.fromtimestamp(body['date']))
         date = datetime.datetime.fromtimestamp(body['date']).strftime('%Y-%m-%d %H:%M:%S')
         lat = body['lat']
         lon = body['lon']
@@ -86,6 +85,8 @@ def get_spots():
         #set start and end as min and max (respectively) unix time stamp values in case user didn't supply one of or both values
         start = 0
         end = 2147483647
+        tempStart = None
+        tempEnd = None
         if body: #user supplied a body to the request
             if "start" in body:
                 tempStart = body['start']
@@ -94,8 +95,10 @@ def get_spots():
             if not "start" in body and not "end" in body:
                 return "must include 'start' and 'end' fields in body of request", 400
         elif request.args.get("start") or request.args.get("end"): #user used url args
-            tempStart = request.args.get("start").strip()
-            tempEnd = request.args.get("end").strip()
+            if request.args.get("start") != None:
+                tempStart = request.args.get("start").strip()
+            if request.args.get("end") != None:
+                tempEnd = request.args.get("end").strip()
         try:
             start = int(tempStart) if tempStart else start
             end = int(tempEnd) if tempEnd else end
@@ -159,7 +162,7 @@ def handle_sms_signup():
 
 def get_coordinates_from_location(location):
     try:
-        url_local = 'http://localhost:5000/api/coords?location=' + location
+        url_local = 'https://localhost:5000/api/coords?location=' + location
         lat, lon = requests.get(url_local).json()
         return lat, lon
     except:
@@ -234,7 +237,7 @@ def get_sightings(start, end):
 
 def get_sighting_location(lat, lon):
     try:
-        url_local = 'http://localhost:5000/api/closest?lat=' + str(lat) + '&lon=' + str(lon)
+        url_local = 'https://localhost:5000/api/closest?lat=' + str(lat) + '&lon=' + str(lon)
         spot = requests.get(url_local).json()
         #if sighting happened within 3 miles of a beach, report that it happened at that beach
         if distance(lat, lon, spot['lat'], spot['lon']) < 3:
@@ -264,4 +267,4 @@ def distance(lat1, lon1, lat2, lon2):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port="5001")
+    app.run(host='0.0.0.0', debug=True, port="5001", ssl_context='adhoc')

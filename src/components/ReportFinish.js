@@ -34,7 +34,6 @@ export default class ReportFinish extends React.Component {
     }
 
     onDropFiles(acceptedFiles) {
-        console.log(acceptedFiles);
         acceptedFiles.forEach((file) => {
             const reader = new FileReader()
 

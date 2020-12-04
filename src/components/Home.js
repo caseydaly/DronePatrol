@@ -48,7 +48,6 @@ export default class HomeScreen extends React.Component {
         var data = fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log("data - " + data);
                 return data;
             });
     }
@@ -69,7 +68,7 @@ export default class HomeScreen extends React.Component {
         }
 
         if (this.state.spots.length < 1) {
-            fetch("http://0.0.0.0:5000/api/spots")
+            fetch("https://0.0.0.0:5000/api/spots")
                 .then(response => response.json())
                 .then(data => {
                     this.setState({
@@ -90,7 +89,7 @@ export default class HomeScreen extends React.Component {
         if (this.state.sightings.length < 1) {
             const start = Math.round(new Date(new Date().setDate(new Date().getDate() - 7)).getTime() / 1000).toString();
             const end = Math.round((new Date().getTime()) / 1000).toString();
-            fetch("http://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
+            fetch("https://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
                 .then(response => response.json())
                 .then(data => {
                     if (!data || data.length < 3) {
@@ -98,7 +97,7 @@ export default class HomeScreen extends React.Component {
                         this.state.dialogs.push(
                             <NoSightings onClick={() => {
                                 this.state.dialogs.splice(newIndex, 1);
-                                fetch("http://0.0.0.0:5001/api/samplesighting")
+                                fetch("https://0.0.0.0:5001/api/samplesighting")
                                     .then(response => response.json())
                                     .then(data => {
                                         this.setState({ sightings: data });
@@ -112,7 +111,6 @@ export default class HomeScreen extends React.Component {
     }
 
     _iconClick(sighting) {
-        console.log("clicked icon");
         this.setState({ popup: sighting });
     }
 
@@ -148,7 +146,7 @@ export default class HomeScreen extends React.Component {
     handleSightingSearch(location, zoomFactor, startDate, endDate) {
         var start = Math.round(startDate.getTime() / 1000)
         var end = Math.round(endDate.getTime() / 1000)
-        fetch("http://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
+        fetch("https://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
             .then(response => response.json())
             .then(data => {
                 this.setState({ sightings: data });
@@ -192,13 +190,12 @@ export default class HomeScreen extends React.Component {
     }
 
     async getClosestSpot(lat, lon) {
-        const deployUrl = "http://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
-        const localUrl = "http://0.0.0.0:5000/api/closest?lat=" + lat + "&lon=" + lon;
+        const deployUrl = "https://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
+        const localUrl = "https://0.0.0.0:5000/api/closest?lat=" + lat + "&lon=" + lon;
         return await Requests.getData(localUrl);
     }
 
     async zoomOnCurrentLocation() {
-        console.log("zooming in home");
         const closestSpot = await this.getClosestSpot(this.state.userCurrentLat, this.state.userCurrentLon);
         this.setState({
             viewport: { latitude: closestSpot.lat, longitude: closestSpot.lon, zoom: 9, bearing: 0, pitch: 0 }
@@ -212,9 +209,8 @@ export default class HomeScreen extends React.Component {
             "lon": this.state.reportLongitude,
             "date": date
         };
-        await Requests.postData('http://0.0.0.0:5001/api/sighting', body)
+        await Requests.postData('https://0.0.0.0:5001/api/sighting', body)
             .then(data => {
-                console.log(data); // JSON data parsed by `data.json()` call
             });
 
         this.state.dialogs.push(<Success />);
@@ -240,7 +236,6 @@ export default class HomeScreen extends React.Component {
     }
 
     handleReportSightingClick(event) {
-        console.log("reporting a click!");
         var newViewport;
         //if user is already zoomed in a lot, don't zoom them back out on a click
         if (this.state.viewport.zoom >= 12) {
@@ -277,8 +272,6 @@ export default class HomeScreen extends React.Component {
         if (this.state.loading) {
             return null;
         }
-
-        console.log("home spots - " + this.state.spots);
 
         return (
 
