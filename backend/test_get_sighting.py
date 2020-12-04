@@ -21,7 +21,7 @@ def get_db():
             database=db_info['database']
         )
         return mydb
-        
+
 class TestClass:
 
     @pytest.fixture(autouse=True)
@@ -53,8 +53,10 @@ class TestClass:
 
     @classmethod
     def teardown_class(cls):
+        database = get_db()
+        cursor = database.cursor()
         cursor.execute("DELETE FROM Sightings WHERE SightingDate='2020-12-03 09:09:00';")
-        mydb.commit()
+        database.commit()
 
     # def setup_method(self, method):
     #     pass
@@ -77,7 +79,7 @@ class TestClass:
 
     
     #test retrieving sighting
-    def test_sighting_get_url_args(self):
+    def test_with_url_args(self):
         start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
         end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
         response = self.client.get('/api/sighting?start=' + start + '&end=' + end)
@@ -91,7 +93,7 @@ class TestClass:
         assert found == True
 
     #test retrieving sighting with only passing the 'start' parameter as a url arg
-    def test_sighting_get_just_start_url(self):
+    def test_with_just_start_url_arg(self):
         start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
         url = '/api/sighting?start=' + start
         response = self.client.get(url)
@@ -105,7 +107,7 @@ class TestClass:
         assert found
 
     #test retrieving sighting with only passing the 'end' parameter as a url arg
-    def test_sighting_get_just_end_url(self):
+    def test_with_just_end_url_arg(self):
         end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
         response = self.client.get('/api/sighting?end=' + end)
         assert response.status_code == 200
@@ -118,14 +120,14 @@ class TestClass:
         assert found
 
     #test retrieving sighting via sighting method with a json request body
-    def test_sighting_get_json_body(self):
+    def test_with_json_body(self):
         start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
         end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
         request_body = {
             "start": start,
             "end":  end
         }
-        response = self.client.get('/api/sighting', request_body)
+        response = self.client.get('/api/sighting', data=request_body)
         assert response.status_code == 200
         json_result = response.json
         found = False
@@ -136,12 +138,12 @@ class TestClass:
         assert found
 
     #test retrieving sighting with only passing the 'start' parameter as a json body arg
-    def test_sighting_get_just_start_json_body(self):
+    def test_with_just_start_json_body(self):
         start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
         request_body = {
             "start": start
         }
-        response = self.client.get('/api/sighting', request_body)
+        response = self.client.get('/api/sighting', data=request_body)
         assert response.status_code == 200
         json_result = response.json
         found = False
@@ -152,12 +154,12 @@ class TestClass:
         assert found
 
     #test retrieving sighting with only passing the 'end' parameter as a json body arg
-    def test_sighting_get_just_end_json_body(self):
+    def test_with_just_end_json_body(self):
         end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
         request_body = {
             "end":  end
         }
-        response = self.client.get('/api/sighting', request_body)
+        response = self.client.get('/api/sighting', data=request_body)
         assert response.status_code == 200
         json_result = response.json
         found = False
@@ -168,8 +170,45 @@ class TestClass:
         assert found
 
 
-#insert sighting into db and test retrieving it
+    #test getting sighting with str instead of int in url arg
+    def test_with_non_int_data_url(self):
+        start = "notANumber"
+        end = "notANumber"
+        response = self.client.get('/api/sighting?start=' + start + '&end=' + end)
+        assert response.status_code == 400
+        assert response.data == b"'start' and 'end' fields must be integers representing unix time stamps"
 
-#insert sighting into db and test retrieving it
+    #test getting sighting with fields named incorrectly
+    def test_with_incorrectly_named_url_args(self):
+        start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
+        end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
+        response = self.client.get('/api/sighting?field_one=' + start + '&field_two=' + end)
+        assert response.status_code == 200
+        resulting_list = response.json
+        assert len(resulting_list) == 0
 
-#insert sighting into db and test retrieving it
+
+    #test getting sighting with str instead of int in json body arg
+    def test_with_non_int_data_json_body(self):
+        start = "notANumber"
+        end = "notANumber"
+        request_body = {
+            "start": start,
+            "end":  end
+        }
+        response = self.client.get('/api/sighting', data=request_body)
+        assert response.status_code == 400
+        assert response.data == b"'start' and 'end' fields must be integers representing unix time stamps"
+
+    #insert sighting into db and test retrieving it
+    def test_with_incorrectly_named_json_body_args(self):
+        start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
+        end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
+        request_body = {
+            "field_one": start,
+            "field_two":  end
+        }
+        response = self.client.get('/api/sighting', data=request_body)
+        assert response.status_code == 200
+        resulting_list = response.json
+        assert len(resulting_list) == 0

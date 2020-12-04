@@ -206,7 +206,6 @@ def store_sighting(file_path, date, latitude, longitude, shark_type, length, dis
 def get_img_from_path(path):
     with open(path, "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-        print(encoded_string)
     return encoded_string
 
 def get_sightings(start, end):
