@@ -46,7 +46,7 @@ def serve(path):
 @app.route('/api/sighting', methods=['GET', 'POST'])
 def get_spots():
     if request.method == 'POST':
-        body = request.json
+        body = request.form
 
         #check that all necessary fields were included
         if not "date" in body:
@@ -81,7 +81,7 @@ def get_spots():
         return "Success", 200
               
     elif request.method == 'GET':
-        body = request.json
+        body = request.form
         #set start and end as min and max (respectively) unix time stamp values in case user didn't supply one of or both values
         start = 0
         end = 2147483647
@@ -92,8 +92,6 @@ def get_spots():
                 tempStart = body['start']
             if "end" in body:
                 tempEnd = body['end']
-            if not "start" in body and not "end" in body:
-                return "must include 'start' and 'end' fields in body of request", 400
         elif request.args.get("start") or request.args.get("end"): #user used url args
             if request.args.get("start") != None:
                 tempStart = request.args.get("start").strip()
@@ -130,7 +128,7 @@ def get_sample_sightings():
 
 @app.route('/api/signup', methods=['POST'])
 def handle_sms_signup():
-    body = request.json
+    body = request.form
     #check that all necessary fields were included
     if not "phone" in body:
         return "Must include the 'phone' field in request body", 400

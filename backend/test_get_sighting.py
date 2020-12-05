@@ -85,6 +85,7 @@ class TestClass:
         response = self.client.get('/api/sighting?start=' + start + '&end=' + end)
         assert response.status_code == 200
         json_result = response.json
+        assert len(json_result) == 1
         found = False
         for sighting in json_result:
             if self.compare_all_but_img(self.ref_obj, sighting):
@@ -127,9 +128,13 @@ class TestClass:
             "start": start,
             "end":  end
         }
-        response = self.client.get('/api/sighting', data=request_body)
+        response = self.client.get('/api/sighting', data=dict(
+            start=start,
+            end=end
+        ))
         assert response.status_code == 200
         json_result = response.json
+        assert len(json_result) == 1
         found = False
         for sighting in json_result:
             if self.compare_all_but_img(self.ref_obj, sighting):
@@ -179,13 +184,18 @@ class TestClass:
         assert response.data == b"'start' and 'end' fields must be integers representing unix time stamps"
 
     #test getting sighting with fields named incorrectly
+    #should still return 200, just return all data (the default)
     def test_with_incorrectly_named_url_args(self):
         start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
         end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
         response = self.client.get('/api/sighting?field_one=' + start + '&field_two=' + end)
         assert response.status_code == 200
         resulting_list = response.json
-        assert len(resulting_list) == 0
+        assert len(resulting_list) > 0 and \
+            "date" in resulting_list[0] and "lat" in resulting_list[0] and\
+                 "lon" in resulting_list[0] and "type" in resulting_list[0] and\
+                      "size" in resulting_list[0] and "dist_to_shore" in resulting_list[0] and \
+                          "img" in resulting_list[0]
 
 
     #test getting sighting with str instead of int in json body arg
@@ -200,7 +210,8 @@ class TestClass:
         assert response.status_code == 400
         assert response.data == b"'start' and 'end' fields must be integers representing unix time stamps"
 
-    #insert sighting into db and test retrieving it
+    #incorrectly named fields should not produce an error but should return the default
+    #as if the parameters were not suggested. i.e. all results
     def test_with_incorrectly_named_json_body_args(self):
         start = str(int(datetime.datetime(2020, 12, 3, 9, 8, 0).timestamp()))
         end = str(int(datetime.datetime(2020, 12, 3, 9, 10, 0).timestamp()))
@@ -211,4 +222,8 @@ class TestClass:
         response = self.client.get('/api/sighting', data=request_body)
         assert response.status_code == 200
         resulting_list = response.json
-        assert len(resulting_list) == 0
+        assert len(resulting_list) > 0 and \
+            "date" in resulting_list[0] and "lat" in resulting_list[0] and\
+                 "lon" in resulting_list[0] and "type" in resulting_list[0] and\
+                      "size" in resulting_list[0] and "dist_to_shore" in resulting_list[0] and \
+                          "img" in resulting_list[0]
