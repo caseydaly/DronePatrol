@@ -149,16 +149,27 @@ def handle_sms_signup():
         return "Must include the 'radius' field in request body", 400
 
     #check that fields are of the correct type
-    if not (type(body['phone']) is str):
-        return "'phone' field must be of type string", 400
+    if not (type(body['phone']) is str or type(body['phone']) is int):
+        return "'phone' field must be of type string or integer", 400
     if not (type(body['location']) is str):
         return "'location' field must be of type string", 400
     if not (type(body['radius']) is int):
         return "'radius' field must be of type integer", 400
 
-    phone = body['phone']
+
+    phone = str(body['phone'])
+    if len(phone) != 10:
+        return "length of 'phone' field in request must be 10", 400
+    try:
+        temp = int(phone)
+    except:
+        return "'phone' field must be an integer or string containing only numbers"
+    
     location = body['location']
+
     radius = body['radius']
+    if radius < 0:
+        return "'radius' field must be greater than 0", 400
 
     lat, lon = get_coordinates_from_location(location)
     if lat == None or lon == None:
