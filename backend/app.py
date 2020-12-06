@@ -46,7 +46,7 @@ def serve(path):
 @app.route('/api/sighting', methods=['GET', 'POST'])
 def get_spots():
     if request.method == 'POST':
-        body = request.form
+        body = request.json
 
         #check that all necessary fields were included
         if not "date" in body:
@@ -59,20 +59,31 @@ def get_spots():
             return "Must include the 'img' field in request body", 400
 
         #check that fields are of the correct type
-        if not (type(body['lat']) is float):
+        try:
+            lat = float(body['lat'])
+        except:
             return "'lat' field must be of type float", 400
-        if not (type(body['lon']) is float):
+
+        try:
+            lon = float(body['lon'])
+        except:
             return "'lon' field must be of type float", 400
-        if not (type(body['img']) is str):
-            return "'img' field must be a base64 encoded string", 400  
-        if not (type(body['date']) is int):
+
+        try:
+            img_encoded = str(body['img'])
+            img_decoded = base64.b64decode(img_encoded)
+        except:
+            return "'img' field must be a base64 encoded string", 400
+
+        try:
+            temp_date = int(body['date'])
+        except:
             return "'date' field must be an integer representing a unix time stamp", 400
 
-        date = datetime.datetime.fromtimestamp(body['date']).strftime('%Y-%m-%d %H:%M:%S')
-        lat = body['lat']
-        lon = body['lon']
-        img_encoded = body['img']
-        img_decoded = base64.b64decode(img_encoded)
+        try:
+            date = datetime.datetime.fromtimestamp(temp_date).strftime('%Y-%m-%d %H:%M:%S')
+        except OverflowError:
+            return "'date' field specified is too large", 400
         file_path = write_image_to_disk(img_decoded)
         location = get_sighting_location(lat, lon)
         #need a real way to determine shark type, size, and distance to shore. use these defaults for now
@@ -81,7 +92,7 @@ def get_spots():
         return "Success", 200
               
     elif request.method == 'GET':
-        body = request.form
+        body = request.json
         #set start and end as min and max (respectively) unix time stamp values in case user didn't supply one of or both values
         start = 0
         end = 2147483647
@@ -128,7 +139,7 @@ def get_sample_sightings():
 
 @app.route('/api/signup', methods=['POST'])
 def handle_sms_signup():
-    body = request.form
+    body = request.json
     #check that all necessary fields were included
     if not "phone" in body:
         return "Must include the 'phone' field in request body", 400

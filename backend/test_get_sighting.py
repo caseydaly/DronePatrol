@@ -128,7 +128,7 @@ class TestClass:
             "start": start,
             "end":  end
         }
-        response = self.client.get('/api/sighting', data=dict(
+        response = self.client.get('/api/sighting', json=dict(
             start=start,
             end=end
         ))
@@ -148,7 +148,7 @@ class TestClass:
         request_body = {
             "start": start
         }
-        response = self.client.get('/api/sighting', data=request_body)
+        response = self.client.get('/api/sighting', json=request_body)
         assert response.status_code == 200
         json_result = response.json
         found = False
@@ -164,7 +164,7 @@ class TestClass:
         request_body = {
             "end":  end
         }
-        response = self.client.get('/api/sighting', data=request_body)
+        response = self.client.get('/api/sighting', json=request_body)
         assert response.status_code == 200
         json_result = response.json
         found = False
@@ -206,7 +206,7 @@ class TestClass:
             "start": start,
             "end":  end
         }
-        response = self.client.get('/api/sighting', data=request_body)
+        response = self.client.get('/api/sighting', json=request_body)
         assert response.status_code == 400
         assert response.data == b"'start' and 'end' fields must be integers representing unix time stamps"
 
@@ -219,7 +219,7 @@ class TestClass:
             "field_one": start,
             "field_two":  end
         }
-        response = self.client.get('/api/sighting', data=request_body)
+        response = self.client.get('/api/sighting', json=request_body)
         assert response.status_code == 200
         resulting_list = response.json
         assert len(resulting_list) > 0 and \
