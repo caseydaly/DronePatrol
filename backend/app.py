@@ -15,24 +15,11 @@ import string
 from math import radians, cos, sin, asin, sqrt
 import requests
 import OpenSSL
+from DBConnection import DBConnection
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-if '/Users/caseydaly' in dir_path:
-    db_info_path = 'db_info.yaml'
-else:
-    db_info_path = '/var/www/html/DronePatrol/backend/db_info.yaml'
-
-with open(db_info_path) as file:
-    db_info = yaml.load(file, Loader=yaml.FullLoader)
-    mydb = mysql.connector.connect(
-        host=db_info['host'],
-        user=db_info['user'],
-        password=db_info['password'],
-        database=db_info['database']
-    )
-
-app = Flask(__name__, static_folder='../build')
-CORS(app)
+with DBConnection() as mydb:
+    app = Flask(__name__, static_folder='../build')
+    CORS(app)
 
 # Serve React App
 @app.route('/', defaults={'path': ''})
@@ -160,10 +147,8 @@ def handle_sms_signup():
     phone = str(body['phone'])
     if len(phone) != 10:
         return "length of 'phone' field in request must be 10", 400
-    try:
-        temp = int(phone)
-    except:
-        return "'phone' field must be an integer or string containing only numbers"
+    if not phone.isdigit():
+        return "'phone' field must be an integer or string containing only numbers", 400
     
     location = body['location']
 
@@ -173,7 +158,7 @@ def handle_sms_signup():
 
     lat, lon = get_coordinates_from_location(location)
     if lat == None or lon == None:
-        return "Error retrieving coordinates from chosen location", 500
+        return "Error retrieving coordinates from chosen location", 400
 
     store_sms_signup(phone, lat, lon, radius)
 
@@ -181,9 +166,12 @@ def handle_sms_signup():
 
 
 def get_coordinates_from_location(location):
+    print(location)
     try:
-        url_local = 'https://localhost:5000/api/coords?location=' + location
-        lat, lon = requests.get(url_local).json()
+        #debug_url = 'http://0.0.0.0:5000/api/coords?location=' + location
+        url = 'https://surfspotsapi.com/api/coords?location=' + location
+        response = requests.get(url)
+        lat, lon = response.json()
         return lat, lon
     except:
         return None, None
@@ -286,4 +274,4 @@ def distance(lat1, lon1, lat2, lon2):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port="5001", ssl_context='adhoc')
+    app.run(host='0.0.0.0', debug=True, port="5001")

@@ -57,7 +57,7 @@ class TestClass:
             SELECT 
                 * 
             FROM 
-                alert_info 
+                Alerts
             WHERE 
                 PhoneNumber=%s AND Radius=%s;
                 """, (alert_info['phone'], alert_info['radius']))
@@ -68,6 +68,7 @@ class TestClass:
 
     def test_good_data(self):
         response = self.client.post('/api/signup', json=self.insert_obj)
+        print(response.data)
         assert response.status_code == 200
         found = self.db_contains_alert_info(self.insert_obj)
         assert found
@@ -88,7 +89,7 @@ class TestClass:
 
     def test_bad_phone_str(self):
         bad_obj = self.insert_obj
-        bad_obj['phone'] = "string, but not a number"
+        bad_obj['phone'] = "len10strin"
         response = self.client.post('/api/signup', json=bad_obj)        
         assert response.status_code == 400
         assert response.data == b"'phone' field must be an integer or string containing only numbers"

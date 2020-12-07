@@ -91,10 +91,7 @@ class TestClass:
     
     #test inserting sighting via api
     def test_good_data(self):
-        print(self.insert_obj['lat'])
-        print(type(self.client))
         response = self.client.post('/api/sighting', json=self.insert_obj)
-        print(response.data)
         assert response.status_code == 200
         found = self.db_contains_sighting(self.insert_obj)
         assert found
