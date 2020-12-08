@@ -68,7 +68,7 @@ export default class HomeScreen extends React.Component {
         }
 
         if (this.state.spots.length < 1) {
-            fetch("https://0.0.0.0:5000/api/spots")
+            fetch(process.env.REACT_APP_SURF_SPOTS_URL + "/api/spots")
                 .then(response => response.json())
                 .then(data => {
                     this.setState({
@@ -89,7 +89,7 @@ export default class HomeScreen extends React.Component {
         if (this.state.sightings.length < 1) {
             const start = Math.round(new Date(new Date().setDate(new Date().getDate() - 7)).getTime() / 1000).toString();
             const end = Math.round((new Date().getTime()) / 1000).toString();
-            fetch("https://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
+            fetch(process.env.REACT_APP_API_URL + "/api/sighting?start=" + start.toString() + "&end=" + end.toString())
                 .then(response => response.json())
                 .then(data => {
                     if (!data || data.length < 3) {
@@ -97,7 +97,7 @@ export default class HomeScreen extends React.Component {
                         this.state.dialogs.push(
                             <NoSightings onClick={() => {
                                 this.state.dialogs.splice(newIndex, 1);
-                                fetch("https://0.0.0.0:5001/api/samplesighting")
+                                fetch(process.env.REACT_APP_API_URL + "/api/samplesighting")
                                     .then(response => response.json())
                                     .then(data => {
                                         this.setState({ sightings: data });
@@ -146,7 +146,7 @@ export default class HomeScreen extends React.Component {
     handleSightingSearch(location, zoomFactor, startDate, endDate) {
         var start = Math.round(startDate.getTime() / 1000)
         var end = Math.round(endDate.getTime() / 1000)
-        fetch("https://0.0.0.0:5001/api/sighting?start=" + start.toString() + "&end=" + end.toString())
+        fetch(process.env.REACT_APP_API_URL + "/api/sighting?start=" + start.toString() + "&end=" + end.toString())
             .then(response => response.json())
             .then(data => {
                 this.setState({ sightings: data });
@@ -190,9 +190,8 @@ export default class HomeScreen extends React.Component {
     }
 
     async getClosestSpot(lat, lon) {
-        const deployUrl = "https://ec2-50-18-14-124.us-west-1.compute.amazonaws.com/api/closest?lat=" + this.state.userCurrentLat + "&lon=" + this.state.userCurrentLon;
-        const localUrl = "https://0.0.0.0:5000/api/closest?lat=" + lat + "&lon=" + lon;
-        return await Requests.getData(localUrl);
+        const url = process.env.REACT_APP_SURF_SPOTS_URL + "/api/closest?lat=" + lat + "&lon=" + lon;
+        return await Requests.getData(url);
     }
 
     async zoomOnCurrentLocation() {
@@ -209,7 +208,7 @@ export default class HomeScreen extends React.Component {
             "lon": this.state.reportLongitude,
             "date": date
         };
-        await Requests.postData('https://0.0.0.0:5001/api/sighting', body)
+        await Requests.postData(process.env.REACT_APP_API_URL + '/api/sighting', body)
             .then(data => {
             });
 

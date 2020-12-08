@@ -50,7 +50,7 @@ class SmsSignUp extends React.Component {
             return;
         }
 
-        const localUrl = 'http://0.0.0.0:5001/api/signup'
+        const localUrl = process.env.REACT_APP_API_URL + 'api/signup'
 
         await Requests.postData(localUrl, body)
             .then(data => {
