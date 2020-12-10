@@ -1,5 +1,5 @@
 import React from 'react';
-import MapGL, { HTMLOverlay, Marker, Popup } from 'react-map-gl';
+import MapGL, { HTMLOverlay, Marker, Popup, NavigationControl } from 'react-map-gl';
 import Sidebar from './Sidebar';
 import CustomMapController from './CustomMapController';
 import SharkIconFilledWhite from '../assets/SharkIconFilledWhite.svg';
@@ -15,6 +15,13 @@ import { Requests } from '../utils/requests';
 import SmsSignUpSuccess from './SmsSignUpSuccess';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiY2FzZXlkYWx5IiwiYSI6ImNrZzJkOG12bjAyZXkydGx2MWJycWYxb2oifQ.S2DCiH_NWnS79eifFsoeWQ';
+
+const navStyle = {
+    position: 'absolute',
+    top: 72,
+    right: 0,
+    padding: '10px'
+};
 
 export default class HomeScreen extends React.Component {
     constructor(props) {
@@ -291,6 +298,9 @@ export default class HomeScreen extends React.Component {
                     >
                         {this.state.showSightings && this.state.sightings && this.state.sightings.map(this._renderIcon.bind(this))}
                         {this.state.addSightingMarker}
+                        <div style={navStyle}>
+                            <NavigationControl />
+                        </div>
                     </MapGL>
                 </div>
 
