@@ -132,7 +132,7 @@ export default class HomeScreen extends React.Component {
                 captureClick={true}
                 captureDoubleClick={true}
             >
-                <img src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, sighting)} />
+                <img style={{cursor: "pointer"}} src={SharkIconFilledWhite} onClick={this._iconClick.bind(this, sighting)} />
             </Marker>
         );
     }
